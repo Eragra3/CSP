@@ -1,0 +1,34 @@
+﻿<Window x:Class="Sudoku.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Sudoku"
+        xmlns:models="clr-namespace:Sudoku.Models"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="700" Width="900">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="7*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <TextBox Name="BoardSizeTextBox" Text="{Binding Path=BoardSize}"></TextBox>
+            <Button Name="CalculateButton" Content="Calculate" VerticalContentAlignment="Center" Width="75" Click="CalculateButton_Click"/>
+        </StackPanel>
+        
+        <Grid Grid.Row="1" Name="BoardPanel">
+            <Grid.RowDefinitions >
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <models:Tile Grid.Row="1"></models:Tile>
+        </Grid>
+    </Grid>
+</Window>
