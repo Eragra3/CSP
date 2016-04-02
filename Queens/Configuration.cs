@@ -11,5 +11,5 @@ namespace Queens
         public static int BoardSize = 8;
 
 
-    }
+    }   
 }

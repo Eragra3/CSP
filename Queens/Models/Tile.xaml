@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:Sudoku.Models"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="100">
-    <StackPanel Name="MainStackPanel" Background="DarkOrange" Margin="10">
+    <StackPanel Name="MainStackPanel" Background="DarkOrange" Margin="4">
         <Label>kek</Label>
     </StackPanel>
 </UserControl>
