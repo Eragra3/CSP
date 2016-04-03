@@ -71,6 +71,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Logic\BacktrackingExecutor.cs" />
+    <Compile Include="Logic\ForwardCheckingExecutor.cs" />
+    <Compile Include="Logic\QueensHelperMethods.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>

@@ -15,11 +15,38 @@
 
         <Grid>
             <Border></Border>
+            <Grid Width="200" HorizontalAlignment="Left">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
 
-            <TextBox Name="BoardSizeTextBox" PreviewTextInput="BoardSizeTextBox_OnPreviewTextInput" VerticalContentAlignment="Center"
-                     Width="100" HorizontalAlignment="Left" ></TextBox>
+                <TextBox Name="BoardSizeTextBox" PreviewTextInput="BoardSizeTextBox_OnPreviewTextInput" VerticalContentAlignment="Center"
+                     Width="100" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0"></TextBox>
+                <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalContentAlignment="Center"
+                       >Board size</Label>
+                <ComboBox Name="RowPickingMethodComboBox" SelectedIndex="0" Grid.Row="1"
+                          Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                    <ComboBoxItem Name="IncrementComboBoxItem">Increment</ComboBoxItem>
+                    <ComboBoxItem Name="RandomComboBoxItem">Random</ComboBoxItem>
+                </ComboBox>
+                <Label Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalContentAlignment="Center"
+                       HorizontalContentAlignment="Left">
+                    <TextBlock> Row picking <LineBreak/> method</TextBlock>
+                </Label>
+            </Grid>
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                <Button Name="BacktrackingButton" Content="Backtracking"
+                <Label Name="NoSolutionLabel"  VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                       Background="Yellow" Visibility="Hidden">
+                    No solution!
+                </Label>
+                <Button Name="ClearButton" Content="Clear" Background="AliceBlue"
+                    VerticalContentAlignment="Center" Width="75" Click="ClearButton_Click"/>
+                <Button Name="BacktrackingButton" Content="Backtracking" BorderThickness="0,1,1,1" 
                     VerticalContentAlignment="Center" Width="75" Click="BacktrackingButton_Click"/>
                 <Button Name="ForwardCheckButton" BorderThickness="0,1,1,1" 
                     VerticalContentAlignment="Center" Width="75" Click="ForwardCheckButton_Click">
