@@ -10,17 +10,16 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Queens.Models
+namespace Queens
 {
     /// <summary>
-    /// Interaction logic for Tile.xaml
+    /// Interaction logic for StatisicsWindow.xaml
     /// </summary>
-    public partial class Tile : UserControl
+    public partial class StatisicsWindow : Window
     {
-        public Tile()
+        public StatisicsWindow()
         {
             InitializeComponent();
         }

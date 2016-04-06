@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Queens.Models;
 
 namespace Queens.Logic
 {
     public class ForwardCheckingExecutor
     {
 
-        public static int[] FindSolution(int n, RowPickingHeuristicsEnum rowPickingHeuristic)
+        public static CSPSolution FindSolution(int n, RowPickingHeuristicsEnum rowPickingHeuristic)
         {
+            var numberOfBacktracks = 0;
+
             var solutionRows = new int[n];
             for (var i = 0; i < solutionRows.Length; i++)
             {
@@ -27,7 +30,7 @@ namespace Queens.Logic
             }
 
             var allRows = new List<int>();
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 allRows.Add(i);
             }
@@ -44,42 +47,45 @@ namespace Queens.Logic
 
                 var noRowFound = false;
 
-                while (solutionRows[columnIndex] == int.MinValue)
+                switch (rowPickingHeuristic)
                 {
-                    switch (rowPickingHeuristic)
-                    {
-                        case RowPickingHeuristicsEnum.Increment:
-                            if (forbiddenLists[columnIndex].Contains(rowIndex) ||
-                                usedRowsLists[columnIndex].Contains(rowIndex))
-                            {
-                                rowIndex++;
-                                noRowFound = rowIndex == n;
-                                continue;
-                            }
-                            break;
-                        case RowPickingHeuristicsEnum.Random:
-                            if (possibleRows.Count == 0)
-                                noRowFound = true;
-                            else
-                                rowIndex = QueensHelperMethods.GetRandomRow(possibleRows);
-                            break;
-                        default:
-                            break;
-                    }
-
-                    solutionRows[columnIndex] = rowIndex;
+                    case RowPickingHeuristicsEnum.Increment:
+                        while ((forbiddenLists[columnIndex].Contains(rowIndex) ||
+                            usedRowsLists[columnIndex].Contains(rowIndex)) &&
+                            !noRowFound)
+                        {
+                            rowIndex++;
+                            noRowFound = rowIndex == n;
+                            continue;
+                        }
+                        break;
+                    case RowPickingHeuristicsEnum.Random:
+                        if (possibleRows.Count == 0)
+                            noRowFound = true;
+                        else
+                            rowIndex = QueensHelperMethods.GetRandomRow(possibleRows);
+                        break;
+                    default:
+                        break;
                 }
+
+                solutionRows[columnIndex] = rowIndex;
 
                 if (noRowFound)
                 {
                     solutionRows[columnIndex] = int.MinValue;
                 }
 
+                if (solutionRows[columnIndex] != int.MinValue)
+                    UpdateForbiddenLists(n, solutionRows, forbiddenLists, columnIndex + 1);
+
                 //go back
-                if (solutionRows[columnIndex] == int.MinValue)
+                if (solutionRows[columnIndex] == int.MinValue || forbiddenLists.Any(l => l.Count == n))
                 {
                     do
                     {
+                        numberOfBacktracks++;
+
                         usedRowsLists[columnIndex].Clear();
 
                         foreach (var forbiddenList in forbiddenLists)
@@ -92,23 +98,27 @@ namespace Queens.Logic
 
                         if (columnIndex < 0)
                         {
-                            return null;
+                            return new CSPSolution()
+                            {
+                                NumberOfBacktracks = numberOfBacktracks
+                            };
                         }
 
                         usedRowsLists[columnIndex].Add(solutionRows[columnIndex]);
                         solutionRows[columnIndex] = int.MinValue;
+
                     } while (forbiddenLists.Any(l => l.Count == n));
 
                     columnIndex--;
                 }
-                else
-                {
-                    UpdateForbiddenLists(n, solutionRows, forbiddenLists, columnIndex + 1);
-                }
-
             }
 
-            return solutionRows;
+            var solution = new CSPSolution()
+            {
+                Solution = solutionRows,
+                NumberOfBacktracks = numberOfBacktracks
+            };
+            return solution;
         }
 
         private static void UpdateForbiddenLists(int n, int[] solutionRows, HashSet<int>[] forbiddenLists, int nextIndex)

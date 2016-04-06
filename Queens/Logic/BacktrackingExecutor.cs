@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Queens.Models;
 
 namespace Queens.Logic
 {
     public class BacktrackingExecutor
     {
-        public static int[] FindSolution(int n, RowPickingHeuristicsEnum rowPickingHeuristic)
+        public static CSPSolution FindSolution(int n, RowPickingHeuristicsEnum rowPickingHeuristic)
         {
+            var numberOfBacktracks = 0;
+
             var solutionRows = new int[n];
             for (var i = 0; i < solutionRows.Length; i++)
             {
@@ -24,7 +28,7 @@ namespace Queens.Logic
             }
 
             var allRows = new List<int>();
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 allRows.Add(i);
             }
@@ -87,22 +91,33 @@ namespace Queens.Logic
                 //go back
                 if (solutionRows[columnIndex] == int.MinValue)
                 {
+                    numberOfBacktracks++;
                     usedRowsLists[columnIndex].Clear();
 
                     columnIndex--;
-                    usedRowsLists[columnIndex].Add(solutionRows[columnIndex]);
-                    solutionRows[columnIndex] = int.MinValue;
 
                     if (columnIndex < 0)
                     {
-                        return null;
+                        return new CSPSolution()
+                        {
+                            NumberOfBacktracks = numberOfBacktracks
+                        };
                     }
+
+                    usedRowsLists[columnIndex].Add(solutionRows[columnIndex]);
+                    solutionRows[columnIndex] = int.MinValue;
+
                     columnIndex--;
                 }
 
             }
 
-            return solutionRows;
+            var solution = new CSPSolution()
+            {
+                Solution = solutionRows,
+                NumberOfBacktracks = numberOfBacktracks
+            };
+            return solution;
         }
     }
 }

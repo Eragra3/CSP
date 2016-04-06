@@ -60,6 +60,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Configuration.cs" />
+    <Compile Include="Extensions\ExtensionMethods.cs" />
+    <Compile Include="StatisicsWindow.xaml.cs">
+      <DependentUpon>StatisicsWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -67,6 +71,10 @@
     <Page Include="Models\Tile.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="StatisicsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -76,6 +84,7 @@
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\CSPSolution.cs" />
     <Compile Include="Models\Tile.xaml.cs">
       <DependentUpon>Tile.xaml</DependentUpon>
     </Compile>

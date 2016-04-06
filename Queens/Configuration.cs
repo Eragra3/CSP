@@ -7,11 +7,14 @@ using System.Threading.Tasks;
 
 namespace Queens
 {
-    public class Configuration
+    public static class Configuration
     {
         public static int BoardSize = 8;
 
         public static RowPickingHeuristicsEnum RowPickingHeuristic = RowPickingHeuristicsEnum.Increment;
 
-    }   
+        public static bool ShowStatisticsWindow = true;
+
+        public static bool RenderBoard = true;
+    }
 }

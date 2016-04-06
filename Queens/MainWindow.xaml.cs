@@ -16,9 +16,10 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Queens;
 using Queens.Logic;
-using Sudoku.Models;
+using Queens.Models;
+using Queens.Extensions;
 
-namespace Sudoku
+namespace Queens
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -77,7 +78,7 @@ namespace Sudoku
                 for (var j = 0; j < Board[i].Length; j++)
                 {
                     var tile = new Tile();
-                    if ((j + i) % 2 == 0) tile.MainPanel.Background = Brushes.DeepSkyBlue;
+                    if ((j + i) % 2 == 0) tile.TileLabel.Background = Brushes.DeepSkyBlue;
                     tile.SetValue(Grid.ColumnProperty, i);
                     tile.SetValue(Grid.RowProperty, j);
                     if (boardSize < 14)
@@ -111,6 +112,8 @@ namespace Sudoku
         {
             RedrawBoard();
 
+            if (!Configuration.RenderBoard) return;
+
             if (queensPositions == null)
             {
                 NoSolutionLabel.Visibility = Visibility.Visible;
@@ -131,7 +134,7 @@ namespace Sudoku
             {
                 for (var j = 0; j < Board[i].Length; j++)
                 {
-                    if ((j + i) % 2 == 0) Board[i][j].MainPanel.Background = Brushes.DeepSkyBlue;
+                    if ((j + i) % 2 == 0) Board[i][j].TileLabel.Background = Brushes.DeepSkyBlue;
                 }
             }
 
@@ -146,15 +149,14 @@ namespace Sudoku
             {
                 for (var j = 0; j < Board[i].Length; j++)
                 {
-                    if ((j + i) % 2 == 0) Board[i][j].MainPanel.Background = Brushes.DeepSkyBlue;
+                    if ((j + i) % 2 == 0) Board[i][j].TileLabel.Background = Brushes.DeepSkyBlue;
                 }
             }
         }
 
         public void PutQueenOnTile(Tile t)
         {
-            t.MainPanel.Background = Brushes.Black;
-            t.TileLabel.Content = "Q";
+            t.TileLabel.Background = Brushes.Black;
         }
 
         private void BoardSizeTextBox_OnPreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -168,26 +170,32 @@ namespace Sudoku
             return !regex.IsMatch(text);
         }
 
-        private void ForwardCheckButton_Click(object sender, RoutedEventArgs e)
+        private async void ForwardCheckButton_Click(object sender, RoutedEventArgs e)
         {
             ReadValues();
 
-            var solution = ForwardCheckingExecutor.FindSolution(
+            var solution = await Task.Factory.StartNew(() => ForwardCheckingExecutor.FindSolution(
                 Configuration.BoardSize,
-                Configuration.RowPickingHeuristic);
+                Configuration.RowPickingHeuristic
+                ));
 
-            RedrawBoard(solution);
+            QueensHelperMethods.AssertSolutionCorrect(solution.Solution);
+            RedrawBoard(solution.Solution);
+            ShowStatisticsWindow(solution);
         }
 
-        private void BacktrackingButton_Click(object sender, RoutedEventArgs e)
+        private async void BacktrackingButton_Click(object sender, RoutedEventArgs e)
         {
             ReadValues();
 
-            var solution = BacktrackingExecutor.FindSolution(
+            var solution = await Task.Factory.StartNew(() => BacktrackingExecutor.FindSolution(
                 Configuration.BoardSize,
-                Configuration.RowPickingHeuristic);
+                Configuration.RowPickingHeuristic
+                ));
 
-            RedrawBoard(solution);
+            QueensHelperMethods.AssertSolutionCorrect(solution.Solution);
+            RedrawBoard(solution.Solution);
+            ShowStatisticsWindow(solution);
         }
 
         private void ReadValues()
@@ -209,6 +217,22 @@ namespace Sudoku
             {
                 Configuration.RowPickingHeuristic = RowPickingHeuristicsEnum.Increment;
             }
+            try
+            {
+                Configuration.ShowStatisticsWindow = ShowStatisticsCheckBox.IsChecked ?? false;
+            }
+            catch (Exception)
+            {
+                Configuration.ShowStatisticsWindow = false;
+            }
+            try
+            {
+                Configuration.RenderBoard = RenderBoardCheckBox.IsChecked ?? false;
+            }
+            catch (Exception)
+            {
+                Configuration.RenderBoard = false;
+            }
         }
 
         private void ClearButton_Click(object sender, RoutedEventArgs e)
@@ -216,6 +240,28 @@ namespace Sudoku
             ReadValues();
 
             RedrawBoard();
+        }
+
+        private void ShowStatisticsWindow(CSPSolution solution)
+        {
+            if (Configuration.ShowStatisticsWindow)
+            {
+                var window = new StatisicsWindow
+                {
+                    NumberOfBacktracksLabel =
+                {
+                    Content = Regex.Replace(
+                        solution?.NumberOfBacktracks
+                        .ToString()
+                        .Reverse(),
+                        @"(.{3})", "$1 ")
+                        .TrimEnd()
+                        .Reverse()
+                }
+                };
+
+                window.Show();
+            }
         }
     }
 }
