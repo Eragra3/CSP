@@ -11,9 +11,39 @@
             <ColumnDefinition Width="1*"></ColumnDefinition>
             <ColumnDefinition Width="3*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <StackPanel Orientation="Vertical">
-            
-        </StackPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <TextBox Name="MinNTextBox" PreviewTextInput="BoardSizeTextBox_OnPreviewTextInput"
+                     VerticalContentAlignment="Center" Grid.Row="0" Grid.Column="0"></TextBox>
+            <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalContentAlignment="Center"
+                       >Starting N</Label>
+            <TextBox Name="MaxNTextBox" PreviewTextInput="BoardSizeTextBox_OnPreviewTextInput"
+                     VerticalContentAlignment="Center" Grid.Row="1" Grid.Column="0"></TextBox>
+            <Label Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalContentAlignment="Center"
+                       >Last N</Label>
+            <ComboBox Name="RowPickingMethodComboBox" SelectedIndex="0" Grid.Row="2" BorderThickness="1,0,1,1"
+                          Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                <ComboBoxItem Name="IncrementComboBoxItem">Increment</ComboBoxItem>
+                <ComboBoxItem Name="RandomComboBoxItem">Random</ComboBoxItem>
+            </ComboBox>
+            <Label Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalContentAlignment="Center"
+                       HorizontalContentAlignment="Left">
+                Row picking method
+            </Label>
+        </Grid>
         <DataGrid Name="ExperimentsStatisticsDataGrid" Grid.Column="1" ItemsSource="{Binding ExperimentResults}">
             <!--<DataGrid.Columns>
                 <DataGridTemplateColumn Header="Image" Width="SizeToCells" IsReadOnly="True">

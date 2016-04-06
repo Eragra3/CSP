@@ -26,16 +26,58 @@ namespace Queens
         {
             InitializeComponent();
 
-            ExperimentResults = new List<ExperimentResultStatistics>
-            {
-                new ExperimentResultStatistics
-                {
-                    N = 8,
-                    NumberOfBacktracks = 62
-                }
-            };
+            ExperimentResults = new List<ExperimentResultStatistics>(100);
 
-            DataContext = new { ExperimentResults = ExperimentResults };
+            DataContext = new
+            {
+                ExperimentResults = ExperimentResults
+            };
+        }
+
+        public void StartExperimentBacktracking()
+        {
+
+        }
+
+
+        private void ReadValues()
+        {
+            try
+            {
+                Configuration.BoardSize = int.Parse(BoardSizeTextBox.Text);
+            }
+            catch (Exception)
+            {
+                Configuration.BoardSize = 0;
+            }
+            try
+            {
+                Configuration.RowPickingHeuristic = (RowPickingHeuristicsEnum)
+                    Enum.Parse(typeof(RowPickingHeuristicsEnum), RowPickingMethodComboBox.Text);
+            }
+            catch (Exception)
+            {
+                Configuration.RowPickingHeuristic = RowPickingHeuristicsEnum.Increment;
+            }
+            try
+            {
+                Configuration.RenderBoard = RenderBoardCheckBox.IsChecked ?? false;
+            }
+            catch (Exception)
+            {
+                Configuration.RenderBoard = false;
+            }
+        }
+
+        private void BoardSizeTextBox_OnPreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = IsPositiveInteger(e.Text);
+        }
+
+        private static bool IsPositiveInteger(string text)
+        {
+            var regex = new Regex("[0-9]+");
+            return !regex.IsMatch(text);
         }
     }
 }

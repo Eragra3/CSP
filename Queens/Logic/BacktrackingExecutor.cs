@@ -101,10 +101,7 @@ namespace Queens.Logic
 
                     if (columnIndex < 0)
                     {
-                        return new CSPSolution()
-                        {
-                            NumberOfBacktracks = numberOfBacktracks
-                        };
+                        return new CSPSolution(solutionRows, numberOfBacktracks, n);
                     }
 
                     backtrackedRowsLists[columnIndex].Add(solutionRows[columnIndex]);
@@ -115,12 +112,39 @@ namespace Queens.Logic
 
             }
 
-            var solution = new CSPSolution()
-            {
-                Solution = solutionRows,
-                NumberOfBacktracks = numberOfBacktracks
-            };
+            var solution = new CSPSolution(solutionRows, numberOfBacktracks, n);
+
             return solution;
+        }
+
+        public static IEnumerable<RunResultStatistics> RunExperiment(ConfigurationBatchFile config)
+        {
+            for (int currentN = 1; currentN < config.MaxN + 1; currentN++)
+            {
+                var result = new RunResultStatistics(currentN);
+
+                yield return FindAllSolutions(currentN, config.RowPickingHeuristicMethod, config.QueenPickingHeuristicMethod);
+
+            }
+        }
+
+        public static RunResultStatistics FindAllSolutions(
+            int n,
+            RowPickingHeuristicsEnum rowPickingMethod,
+            QueenPickingHeuristicsEnum queenPickingMethod)
+        {
+            var result = new RunResultStatistics(n);
+
+            //while (result.AllRunsWithNewSolution.Count != n)
+            //{
+
+            //}
+
+            var solution = FindSolution(n, rowPickingMethod);
+
+            result.AllRunsWithNewSolution.Add(new SolutionStatistics(solution.Solution, solution.NumberOfBacktracks, n, 1));
+
+            return result;
         }
     }
 }

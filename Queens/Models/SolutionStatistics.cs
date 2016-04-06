@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Queens.Models
 {
-    public class CSPSolution
+    public class SolutionStatistics
     {
         public readonly int[] Solution;
 
@@ -14,11 +14,14 @@ namespace Queens.Models
 
         public readonly int N;
 
-        public CSPSolution(int[] solution, int numberOfBacktracks, int n)
+        public readonly int NumberOfNewSolutions;
+
+        public SolutionStatistics(int[] solution, int numberOfBacktracks, int n, int numberOfNewSolutions)
         {
             Solution = solution;
             NumberOfBacktracks = numberOfBacktracks;
             N = n;
+            NumberOfNewSolutions = numberOfNewSolutions;
         }
     }
 }

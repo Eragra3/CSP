@@ -64,7 +64,10 @@
     </Compile>
     <Compile Include="Configuration.cs" />
     <Compile Include="Extensions\ExtensionMethods.cs" />
+    <Compile Include="Models\ConfigurationBatchFile.cs" />
     <Compile Include="Models\ExperimentResultStatistics.cs" />
+    <Compile Include="Models\SolutionStatistics.cs" />
+    <Compile Include="Models\RunResultStatistics.cs" />
     <Compile Include="StatisicsWindow.xaml.cs">
       <DependentUpon>StatisicsWindow.xaml</DependentUpon>
     </Compile>

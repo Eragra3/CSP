@@ -6,12 +6,20 @@ using System.Threading.Tasks;
 
 namespace Queens.Models
 {
-    public class ExperimentResultStatistics
+    public class RunResultStatistics
     {
-        public int NumberOfBacktracks { get; set; }
+        public readonly IList<SolutionStatistics> AllRunsWithNewSolution;
 
-        public int N { get; set; }
+        public int RunsWithNoNewSolutionCount;
 
-        public string Test { get; set; } = "lel";
+        public int RunsCount => AllRunsWithNewSolution.Count + RunsWithNoNewSolutionCount;
+
+        public readonly int N;
+
+        public RunResultStatistics(int n, IList<SolutionStatistics> allRunsWithNewSolution = null)
+        {
+            N = n;
+            AllRunsWithNewSolution = allRunsWithNewSolution ?? new List<SolutionStatistics>(1000);
+        }
     }
 }
