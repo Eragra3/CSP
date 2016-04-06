@@ -31,6 +31,17 @@ namespace Queens.Logic
             return possibleRows.ElementAt(_random.Next(0, possibleRows.Count));
         }
 
+        /// <summary>
+        /// return next possible int or -1
+        /// </summary>
+        /// <param name="possibleRows"></param>
+        /// <returns></returns>
+        public static int GetNextPossibleRow(List<int> possibleRows)
+        {
+            if (possibleRows.Count == 0) return -1;
+            return possibleRows.Min();
+        }
+
         public static void AssertSolutionCorrect(int[] solutionRows)
         {
             if (solutionRows == null) return;

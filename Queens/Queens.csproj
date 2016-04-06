@@ -55,15 +55,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AdvancedWindow.xaml.cs">
+      <DependentUpon>AdvancedWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Configuration.cs" />
     <Compile Include="Extensions\ExtensionMethods.cs" />
+    <Compile Include="Models\ExperimentResultStatistics.cs" />
     <Compile Include="StatisicsWindow.xaml.cs">
       <DependentUpon>StatisicsWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="AdvancedWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -18,13 +18,13 @@ namespace Queens.Logic
             var solutionRows = new int[n];
             for (var i = 0; i < solutionRows.Length; i++)
             {
-                solutionRows[i] = int.MinValue;
+                solutionRows[i] = -1;
             }
 
-            var usedRowsLists = new IList<int>[n];
-            for (var i = 0; i < usedRowsLists.Length; i++)
+            var backtrackedRowsLists = new IList<int>[n];
+            for (var i = 0; i < backtrackedRowsLists.Length; i++)
             {
-                usedRowsLists[i] = new List<int>(n);
+                backtrackedRowsLists[i] = new List<int>(n);
             }
 
             var allRows = new List<int>();
@@ -32,67 +32,70 @@ namespace Queens.Logic
             {
                 allRows.Add(i);
             }
-            var usedRows = new List<int>();
+
+            var conflictingRows = new List<int>();
 
             for (var columnIndex = 0; columnIndex < solutionRows.Length; columnIndex++)
             {
                 var rowIndex = -1;
-                usedRows.Clear();
+                conflictingRows.Clear();
 
                 var noRowFound = false;
 
-                while (solutionRows[columnIndex] == int.MinValue)
+                var removedObviousConflicts = allRows
+                                .Except(backtrackedRowsLists[columnIndex])
+                                .Except(solutionRows).ToList();
+
+                while (solutionRows[columnIndex] == -1)
                 {
                     switch (rowPickingHeuristic)
                     {
                         case RowPickingHeuristicsEnum.Increment:
-                            rowIndex++;
-                            noRowFound = rowIndex == n;
+                            rowIndex = QueensHelperMethods.GetNextPossibleRow(
+                                removedObviousConflicts
+                                .Except(conflictingRows)
+                                .ToList());
+                            noRowFound = rowIndex == -1;
                             break;
                         case RowPickingHeuristicsEnum.Random:
-                            if (allRows.Count == usedRows.Count)
+                            var possibleRows = removedObviousConflicts.Except(conflictingRows).ToList();
+                            if (possibleRows.Count == 0)
                                 noRowFound = true;
                             else
-                                rowIndex = QueensHelperMethods.GetRandomRow(
-                                    allRows.Except(usedRows).ToList());
+                                rowIndex = QueensHelperMethods.GetRandomRow(possibleRows);
                             break;
                         default:
                             break;
                     }
                     if (noRowFound)
                     {
-                        solutionRows[columnIndex] = int.MinValue;
+                        solutionRows[columnIndex] = -1;
                         break;
                     }
 
-                    if (usedRowsLists[columnIndex].Contains(rowIndex))
-                    {
-                        usedRows.Add(rowIndex);
-                        continue;
-                    }
-
                     var conflicts = false;
-                    for (var k = 0; !conflicts && k < columnIndex; k++)
+                    for (var k = 0; !conflicts && k < solutionRows.Length; k++)
                     {
+                        if (k == columnIndex || solutionRows[k] == -1) continue;
+
                         conflicts = QueensHelperMethods.Conflicts(k, solutionRows[k], columnIndex, rowIndex);
                     }
 
                     if (conflicts)
                     {
-                        usedRows.Add(rowIndex);
+                        conflictingRows.Add(rowIndex);
                     }
                     else
                     {
                         solutionRows[columnIndex] = rowIndex;
                     }
-
                 }
 
                 //go back
-                if (solutionRows[columnIndex] == int.MinValue)
+                if (solutionRows[columnIndex] == -1)
                 {
                     numberOfBacktracks++;
-                    usedRowsLists[columnIndex].Clear();
+                    backtrackedRowsLists[columnIndex].Clear();
 
                     columnIndex--;
 
@@ -104,8 +107,8 @@ namespace Queens.Logic
                         };
                     }
 
-                    usedRowsLists[columnIndex].Add(solutionRows[columnIndex]);
-                    solutionRows[columnIndex] = int.MinValue;
+                    backtrackedRowsLists[columnIndex].Add(solutionRows[columnIndex]);
+                    solutionRows[columnIndex] = -1;
 
                     columnIndex--;
                 }

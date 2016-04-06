@@ -174,10 +174,12 @@ namespace Queens
         {
             ReadValues();
 
+            BlockControls();
             var solution = await Task.Factory.StartNew(() => ForwardCheckingExecutor.FindSolution(
                 Configuration.BoardSize,
                 Configuration.RowPickingHeuristic
                 ));
+            UnblockControls();
 
             QueensHelperMethods.AssertSolutionCorrect(solution.Solution);
             RedrawBoard(solution.Solution);
@@ -188,10 +190,12 @@ namespace Queens
         {
             ReadValues();
 
+            BlockControls();
             var solution = await Task.Factory.StartNew(() => BacktrackingExecutor.FindSolution(
                 Configuration.BoardSize,
                 Configuration.RowPickingHeuristic
                 ));
+            UnblockControls();
 
             QueensHelperMethods.AssertSolutionCorrect(solution.Solution);
             RedrawBoard(solution.Solution);
@@ -239,7 +243,9 @@ namespace Queens
         {
             ReadValues();
 
+            BlockControls();
             RedrawBoard();
+            UnblockControls();
         }
 
         private void ShowStatisticsWindow(CSPSolution solution)
@@ -262,6 +268,29 @@ namespace Queens
 
                 window.Show();
             }
+        }
+
+        private void BlockControls()
+        {
+            BacktrackingButton.IsEnabled = false;
+            ForwardCheckButton.IsEnabled = false;
+            ClearButton.IsEnabled = false;
+            ProcessingLabel.Visibility = Visibility.Visible;
+        }
+
+        private void UnblockControls()
+        {
+            BacktrackingButton.IsEnabled = true;
+            ForwardCheckButton.IsEnabled = true;
+            ClearButton.IsEnabled = true;
+            ProcessingLabel.Visibility = Visibility.Hidden;
+        }
+
+        private void OpenAdvancedWindow(object sender, RoutedEventArgs e)
+        {
+            var window = new AdvancedWindow();
+
+            window.Show();
         }
     }
 }

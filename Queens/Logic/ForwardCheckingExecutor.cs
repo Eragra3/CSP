@@ -17,7 +17,7 @@ namespace Queens.Logic
             var solutionRows = new int[n];
             for (var i = 0; i < solutionRows.Length; i++)
             {
-                solutionRows[i] = int.MinValue;
+                solutionRows[i] = -1;
             }
 
             var forbiddenLists = new HashSet<int>[n];
@@ -54,8 +54,8 @@ namespace Queens.Logic
                             usedRowsLists[columnIndex].Contains(rowIndex)) &&
                             !noRowFound)
                         {
-                            rowIndex++;
-                            noRowFound = rowIndex == n;
+                            rowIndex = QueensHelperMethods.GetNextPossibleRow(possibleRows);
+                            noRowFound = rowIndex == -1;
                             continue;
                         }
                         break;
@@ -73,14 +73,14 @@ namespace Queens.Logic
 
                 if (noRowFound)
                 {
-                    solutionRows[columnIndex] = int.MinValue;
+                    solutionRows[columnIndex] = -1;
                 }
 
-                if (solutionRows[columnIndex] != int.MinValue)
+                if (solutionRows[columnIndex] != -1)
                     UpdateForbiddenLists(n, solutionRows, forbiddenLists, columnIndex + 1);
 
-                //go back
-                if (solutionRows[columnIndex] == int.MinValue || forbiddenLists.Any(l => l.Count == n))
+                //go back if no valid row or not assigned queens have no possible rows
+                if (solutionRows[columnIndex] == -1 || forbiddenLists.Any(l => l.Count == n))
                 {
                     do
                     {
@@ -105,7 +105,7 @@ namespace Queens.Logic
                         }
 
                         usedRowsLists[columnIndex].Add(solutionRows[columnIndex]);
-                        solutionRows[columnIndex] = int.MinValue;
+                        solutionRows[columnIndex] = -1;
 
                     } while (forbiddenLists.Any(l => l.Count == n));
 
