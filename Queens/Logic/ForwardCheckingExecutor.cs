@@ -172,7 +172,7 @@ namespace Queens.Logic
 
             for (int i = 0; !hasEmptyDomain && i < variablesValues.Length; i++)
             {
-                if (variablesValues[i] == -1) continue;
+                if (variablesValues[i] != -1) continue;
 
                 hasEmptyDomain = invalidValuesLists[i]
                     .Union(backtrackedValuesLists[i])

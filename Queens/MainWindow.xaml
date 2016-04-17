@@ -33,7 +33,7 @@
                      Width="100" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0"></TextBox>
             <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalContentAlignment="Center"
                        >Board size</Label>
-            <ComboBox Name="RowPickingMethodComboBox" SelectedIndex="0" Grid.Row="1" BorderThickness="1,0,1,1"
+            <ComboBox Name="ValuePickingMethodComboBox" SelectedIndex="0" Grid.Row="1" BorderThickness="1,0,1,1"
                           Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
                 <ComboBoxItem Name="IncrementComboBoxItem">Increment</ComboBoxItem>
                 <ComboBoxItem Name="RandomComboBoxItem">Random</ComboBoxItem>

@@ -11,7 +11,19 @@ namespace Queens.Logic
 {
     public static class QueensHelperMethods
     {
-        private static Random _random = new Random();
+        [ThreadStatic]
+        private static Random _random;
+
+        private static Random Random
+        {
+            get
+            {
+                if (_random == null)
+                    _random = new Random();
+
+                return _random;
+            }
+        }
 
         public static bool QueensCheckForConflicts(int[] allVariables, int currentValue, int currentIndex)
         {
@@ -33,10 +45,12 @@ namespace Queens.Logic
             var contains = false;
             for (var i = 0; !contains && i < solutions.Count; i++)
             {
-                for (var j = 0; !contains && j < solutions[i].Length; j++)
+                var equals = true;
+                for (var j = 0; equals && j < solutions[i].Length; j++)
                 {
-                    contains = solutions[i][j] == currentSolution[j];
+                    equals = solutions[i][j] == currentSolution[j];
                 }
+                contains = equals;
             }
             return contains;
         }
@@ -49,7 +63,7 @@ namespace Queens.Logic
         public static int GetRandomValue(List<int> possibleValues)
         {
             if (possibleValues.Count == 0) return -1;
-            return possibleValues.ElementAt(_random.Next(0, possibleValues.Count));
+            return possibleValues.ElementAt(Random.Next(0, possibleValues.Count));
         }
 
         /// <summary>
@@ -83,12 +97,23 @@ namespace Queens.Logic
 
         public static int[] GetRandomVariableOrder(int size)
         {
-            return Enumerable.Range(0, size).OrderBy(x => _random.Next()).ToArray();
+            return Enumerable.Range(0, size).OrderBy(x => Random.Next()).ToArray();
         }
 
         public static int[] GetIncrementalVariableOrder(int size)
         {
             return Enumerable.Range(0, size).ToArray();
+        }
+
+        public static int[] GetQueensDomain(int n)
+        {
+            var domain = new int[n];
+            for (var i = 0; i < domain.Length; i++)
+            {
+                domain[i] = i;
+            }
+
+            return domain;
         }
     }
 }

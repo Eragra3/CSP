@@ -24,7 +24,7 @@ namespace Queens
 
         public static long[] AllSolutionsCount =
         {
-            1, 0, 0, 2, 10, 4, 40, 92, 352, 724, 2680, 14200, 73712,
+            0, 1, 0, 0, 2, 10, 4, 40, 92, 352, 724, 2680, 14200, 73712,
             365596, 2279184, 14772512, 95815104, 666090624,
             4968057848, 39029188884, 314666222712, 2691008701644,
             24233937684440, 227514171973736, 2207893435808352,
@@ -60,28 +60,30 @@ namespace Queens
 
         public static ValuePickingHeuristicsEnum ValuePickingHeuristic = ValuePickingHeuristicsEnum.Random;
 
-        public static VariablePickingHeuristicsEnum VariablePickingHeuristic = VariablePickingHeuristicsEnum.Random;
+        public static VariablePickingHeuristicsEnum VariablePickingHeuristic = VariablePickingHeuristicsEnum.Increment;
 
         public static bool ShowStatisticsWindow = true;
 
         public static bool RenderBoard = true;
+
+        public static int MaxExperimentTimeInSeconds = 60;
     }
 
     public enum ValuePickingHeuristicsEnum
     {
-        Increment,
-        Random
+        Increment = 0,
+        Random = 1
     }
 
     public enum VariablePickingHeuristicsEnum
     {
-        Increment,
-        Random
+        Increment = 0,
+        Random = 1
     }
 
     public enum ExecutorsEnum
     {
-        Backtracking,
-        ForwardChecking
+        Backtracking = 0,
+        ForwardChecking = 1
     }
 }

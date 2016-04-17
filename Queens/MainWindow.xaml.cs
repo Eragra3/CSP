@@ -36,6 +36,8 @@ namespace Queens
             InitializeComponent();
             BoardSizeTextBox.Text = Configuration.BoardSize.ToString();
 
+            ValuePickingMethodComboBox.SelectedIndex = (int)Configuration.ValuePickingHeuristic;
+
             RedrawBoard();
         }
 
@@ -221,7 +223,7 @@ namespace Queens
             try
             {
                 Configuration.ValuePickingHeuristic = (ValuePickingHeuristicsEnum)
-                    Enum.Parse(typeof(ValuePickingHeuristicsEnum), RowPickingMethodComboBox.Text);
+                    Enum.Parse(typeof(ValuePickingHeuristicsEnum), ValuePickingMethodComboBox.Text);
             }
             catch (Exception)
             {

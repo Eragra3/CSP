@@ -30,11 +30,11 @@ namespace Queens.Logic
             ExecutorsEnum usedExecutor)
         {
             var result = new SingleRunResultStatistics(n, usedExecutor);
-            var rand = new Random();
             var sw = new Stopwatch();
             sw.Start();
 
-            while (result.SolutionsCount < Configuration.AllSolutionsCount[n] && sw.Elapsed.TotalSeconds < 60)
+            while (result.SolutionsCount < Configuration.AllSolutionsCount[n] &&
+                sw.Elapsed.TotalSeconds < Configuration.MaxExperimentTimeInSeconds)
             {
                 CSPSolution solution;
 
@@ -42,19 +42,19 @@ namespace Queens.Logic
                 {
                     case ExecutorsEnum.Backtracking:
                         solution = BacktrackingExecutor.FindSolution(
-                    n,
-                    valuePickingMethod,
-                    variablePickingMethod,
-                    QueensHelperMethods.QueensCheckForConflicts,
-                    Configuration.QueensDomain);
+                            n,
+                            valuePickingMethod,
+                            variablePickingMethod,
+                            QueensHelperMethods.QueensCheckForConflicts,
+                            QueensHelperMethods.GetQueensDomain(n));
                         break;
                     case ExecutorsEnum.ForwardChecking:
                         solution = ForwardCheckingExecutor.FindSolution(
-                    n,
-                    valuePickingMethod,
-                    variablePickingMethod,
-                    QueensHelperMethods.QueensCheckForConflicts,
-                    Configuration.QueensDomain);
+                            n,
+                            valuePickingMethod,
+                            variablePickingMethod,
+                            QueensHelperMethods.QueensCheckForConflicts,
+                            QueensHelperMethods.GetQueensDomain(n));
                         break;
                     default:
                         throw new Exception($"Not existing executor - {usedExecutor}");
