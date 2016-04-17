@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Queens.Models;
 
 namespace Queens.Logic
@@ -10,23 +11,40 @@ namespace Queens.Logic
     public class ForwardCheckingExecutor
     {
 
-        public static CSPSolution FindSolution(int n, RowPickingHeuristicsEnum rowPickingHeuristic)
+        public static CSPSolution FindSolution(
+            int n,
+            ValuePickingHeuristicsEnum valuePickingHeuristic,
+            VariablePickingHeuristicsEnum variablePickingHeuristic,
+            Func<int[], int, int, bool> conflictsFunc,
+            int[] domain)
         {
-            var numberOfBacktracks = 0;
+            var backtracksCount = 0;
 
-            var solutionRows = new int[n];
-            for (var i = 0; i < solutionRows.Length; i++)
+            var variablesValues = new int[n];
+            for (var i = 0; i < variablesValues.Length; i++)
             {
-                solutionRows[i] = -1;
+                variablesValues[i] = -1;
             }
 
-            var forbiddenLists = new HashSet<int>[n];
-            var usedRowsLists = new HashSet<int>[n];
-
-            for (var i = 0; i < forbiddenLists.Length; i++)
+            int[] variableEvaluationOrder;
+            switch (variablePickingHeuristic)
             {
-                forbiddenLists[i] = new HashSet<int>();
-                usedRowsLists[i] = new HashSet<int>();
+                case VariablePickingHeuristicsEnum.Increment:
+                    variableEvaluationOrder = QueensHelperMethods.GetIncrementalVariableOrder(n);
+                    break;
+                case VariablePickingHeuristicsEnum.Random:
+                    variableEvaluationOrder = QueensHelperMethods.GetRandomVariableOrder(n);
+                    break;
+                default:
+                    throw new Exception($"{variablePickingHeuristic} is not value of {nameof(VariablePickingHeuristicsEnum)}");
+            }
+
+            var invalidValuesLists = new HashSet<int>[n];
+            var backtrackedValuesLists = new HashSet<int>[n];
+            for (var i = 0; i < invalidValuesLists.Length; i++)
+            {
+                invalidValuesLists[i] = new HashSet<int>();
+                backtrackedValuesLists[i] = new HashSet<int>();
             }
 
             var allRows = new List<int>();
@@ -34,120 +52,134 @@ namespace Queens.Logic
             {
                 allRows.Add(i);
             }
-            var possibleRows = new List<int>();
 
-            for (var columnIndex = 0; columnIndex < solutionRows.Length; columnIndex++)
+            for (var index = 0; index < variableEvaluationOrder.Length; index++)
             {
-                var rowIndex = 0;
-                possibleRows = allRows
-                    .Except(forbiddenLists[columnIndex])
-                    .Except(usedRowsLists[columnIndex])
+                var currentVariableValue = -1;
+                var currentVariableIndex = variableEvaluationOrder[index];
+
+                var validValues = allRows
+                    .Except(invalidValuesLists[currentVariableIndex])
+                    .Except(backtrackedValuesLists[currentVariableIndex])
                     .ToList();
 
 
-                var noRowFound = false;
-
-                switch (rowPickingHeuristic)
+                if (validValues.Count == 0)
                 {
-                    case RowPickingHeuristicsEnum.Increment:
-                        while ((forbiddenLists[columnIndex].Contains(rowIndex) ||
-                            usedRowsLists[columnIndex].Contains(rowIndex)) &&
-                            !noRowFound)
-                        {
-                            rowIndex = QueensHelperMethods.GetNextPossibleRow(possibleRows);
-                            noRowFound = rowIndex == -1;
-                            continue;
-                        }
-                        break;
-                    case RowPickingHeuristicsEnum.Random:
-                        if (possibleRows.Count == 0)
-                            noRowFound = true;
-                        else
-                            rowIndex = QueensHelperMethods.GetRandomRow(possibleRows);
-                        break;
-                    default:
-                        break;
+                    currentVariableValue = -1;
                 }
-
-                solutionRows[columnIndex] = rowIndex;
-
-                if (noRowFound)
+                else
                 {
-                    solutionRows[columnIndex] = -1;
-                }
-
-                if (solutionRows[columnIndex] != -1)
-                    UpdateForbiddenLists(n, solutionRows, forbiddenLists, columnIndex + 1);
-
-                //go back if no valid row or not assigned queens have no possible rows
-                if (solutionRows[columnIndex] == -1 || forbiddenLists.Any(l => l.Count == n))
-                {
-                    do
+                    switch (valuePickingHeuristic)
                     {
-                        numberOfBacktracks++;
+                        case ValuePickingHeuristicsEnum.Increment:
+                            currentVariableValue = QueensHelperMethods.GetMinimumValue(validValues);
+                            break;
+                        case ValuePickingHeuristicsEnum.Random:
+                            currentVariableValue = QueensHelperMethods.GetRandomValue(validValues);
+                            break;
+                        default:
+                            throw new Exception($"Not existing value picking heuristic - {valuePickingHeuristic}");
+                    }
+                }
 
-                        usedRowsLists[columnIndex].Clear();
+                if (currentVariableValue != -1)
+                {
+                    variablesValues[currentVariableIndex] = currentVariableValue;
+                    UpdateValidValues(variablesValues, invalidValuesLists, domain);
+                }
+                //go back if no valid row or not assigned queens have no possible rows
+                if (currentVariableValue == -1 ||
+                    UnassignedVariableHasEmptyDomain(
+                        invalidValuesLists,
+                        variablesValues,
+                        backtrackedValuesLists,
+                        domain))
+                {
+                    variablesValues[currentVariableIndex] = -1;
+                    backtracksCount++;
 
-                        foreach (var forbiddenList in forbiddenLists)
-                        {
-                            forbiddenList.Clear();
-                        }
+                    backtrackedValuesLists[currentVariableIndex].Clear();
 
-                        columnIndex--;
-                        UpdateForbiddenLists(n, solutionRows, forbiddenLists, columnIndex);
+                    index--;
 
-                        if (columnIndex < 0)
-                        {
-                            return new CSPSolution()
-                            {
-                                NumberOfBacktracks = numberOfBacktracks
-                            };
-                        }
+                    if (index < 0)
+                    {
+                        return new CSPSolution(null, backtracksCount, n);
+                    }
 
-                        usedRowsLists[columnIndex].Add(solutionRows[columnIndex]);
-                        solutionRows[columnIndex] = -1;
+                    var previousVariableIndex = variableEvaluationOrder[index];
 
-                    } while (forbiddenLists.Any(l => l.Count == n));
 
-                    columnIndex--;
+                    backtrackedValuesLists[previousVariableIndex]
+                        .Add(variablesValues[previousVariableIndex]);
+                    variablesValues[previousVariableIndex] = -1;
+
+                    UpdateValidValues(variablesValues, invalidValuesLists, domain);
+
+                    index--;
                 }
             }
 
-            var solution = new CSPSolution()
-            {
-                Solution = solutionRows,
-                NumberOfBacktracks = numberOfBacktracks
-            };
+            var solution = new CSPSolution(variablesValues, backtracksCount, n);
             return solution;
         }
 
-        private static void UpdateForbiddenLists(int n, int[] solutionRows, HashSet<int>[] forbiddenLists, int nextIndex)
+        private static void UpdateValidValues(
+            int[] variablesValues,
+            HashSet<int>[] invalidValuesLists, 
+            int[] domain)
         {
-            for (var forbiddenColorIndex = 0; forbiddenColorIndex < nextIndex; forbiddenColorIndex++)
+            foreach (var vv in invalidValuesLists)
             {
-                var forbiddenColor = solutionRows[forbiddenColorIndex];
+                vv.Clear();
+            }
 
-                var diagonalUp = forbiddenColor + 1 + (nextIndex - 1 - forbiddenColorIndex);
-                var diagonalDown = forbiddenColor - 1 - (nextIndex - 1 - forbiddenColorIndex);
+            for (int i = 0; i < variablesValues.Length; i++)
+            {
+                var usedValue = variablesValues[i];
+                if (usedValue == -1) continue;
 
-                for (var j = nextIndex; j < solutionRows.Length; j++)
+
+                for (int j = 0; j < invalidValuesLists.Length; j++)
                 {
-                    forbiddenLists[j].Add(forbiddenColor);
-                    var v1 = diagonalUp;
-                    if (v1 < n)
-                    {
-                        forbiddenLists[j].Add(v1);
-                        diagonalUp++;
-                    }
+                    var horizontal = usedValue;
+                    var diagonal1 = usedValue + Math.Abs(i - j);
+                    var diagonal2 = usedValue - Math.Abs(i - j);
 
-                    var v = diagonalDown;
-                    if (v > -1)
+                    var invalidValuesHashSet = invalidValuesLists[j];
+                    //horizontal
+                    invalidValuesHashSet.Add(horizontal);
+                    if (domain.Contains(diagonal1))
                     {
-                        forbiddenLists[j].Add(v);
-                        diagonalDown--;
+                        invalidValuesHashSet.Add(diagonal1);
+                    }
+                    if (domain.Contains(diagonal2))
+                    {
+                        invalidValuesHashSet.Add(diagonal2);
                     }
                 }
             }
+        }
+
+        private static bool UnassignedVariableHasEmptyDomain(
+            HashSet<int>[] invalidValuesLists,
+            int[] variablesValues,
+            HashSet<int>[] backtrackedValuesLists,
+            int[] domain)
+        {
+            var hasEmptyDomain = false;
+
+            for (int i = 0; !hasEmptyDomain && i < variablesValues.Length; i++)
+            {
+                if (variablesValues[i] == -1) continue;
+
+                hasEmptyDomain = invalidValuesLists[i]
+                    .Union(backtrackedValuesLists[i])
+                    .Count() == domain.Length;
+            }
+
+            return hasEmptyDomain;
         }
     }
 }

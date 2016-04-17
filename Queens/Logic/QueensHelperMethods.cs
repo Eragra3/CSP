@@ -5,22 +5,51 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 
 namespace Queens.Logic
 {
-    public class QueensHelperMethods
+    public static class QueensHelperMethods
     {
         private static Random _random = new Random();
 
+        public static bool QueensCheckForConflicts(int[] allVariables, int currentValue, int currentIndex)
+        {
+            var conflicts = false;
+            for (var k = 0; !conflicts && k < allVariables.Length; k++)
+            {
+                //do not check conflicts with itself and unnasigned variables
+                if (k == currentIndex || allVariables[k] == -1) continue;
+
+                conflicts = Conflicts(k, allVariables[k], currentIndex, currentValue);
+            }
+            return conflicts;
+        }
+
+        public static bool Contains(IList<int[]> solutions, int[] currentSolution)
+        {
+            if (currentSolution == null) return false;
+
+            var contains = false;
+            for (var i = 0; !contains && i < solutions.Count; i++)
+            {
+                for (var j = 0; !contains && j < solutions[i].Length; j++)
+                {
+                    contains = solutions[i][j] == currentSolution[j];
+                }
+            }
+            return contains;
+        }
 
         public static bool Conflicts(int i1, int j1, int i2, int j2)
         {
             return i1 == i2 || j1 == j2 || Math.Abs(i1 - i2) == Math.Abs(j1 - j2);
         }
 
-        public static int GetRandomRow(List<int> possibleRows)
+        public static int GetRandomValue(List<int> possibleValues)
         {
-            return possibleRows.ElementAt(_random.Next(0, possibleRows.Count));
+            if (possibleValues.Count == 0) return -1;
+            return possibleValues.ElementAt(_random.Next(0, possibleValues.Count));
         }
 
         /// <summary>
@@ -28,28 +57,38 @@ namespace Queens.Logic
         /// </summary>
         /// <param name="possibleRows"></param>
         /// <returns></returns>
-        public static int GetNextPossibleRow(List<int> possibleRows)
+        public static int GetMinimumValue(List<int> possibleRows)
         {
             if (possibleRows.Count == 0) return -1;
             return possibleRows.Min();
         }
 
-        public static void AssertSolutionCorrect(int[] solutionRows)
+        public static void AssertSolutionCorrect(int[] variablesValues)
         {
-            if (solutionRows == null) return;
-            for (var i1 = 0; i1 < solutionRows.Length; i1++)
+            if (variablesValues == null) return;
+            for (var i1 = 0; i1 < variablesValues.Length; i1++)
             {
-                var j1 = solutionRows[i1];
-                for (var i2 = 0; i2 < solutionRows.Length; i2++)
+                var j1 = variablesValues[i1];
+                for (var i2 = 0; i2 < variablesValues.Length; i2++)
                 {
                     if (i2 == i1) continue;
-                    var j2 = solutionRows[i2];
+                    var j2 = variablesValues[i2];
                     if (Conflicts(i1, j1, i2, j2))
                     {
                         throw new Exception("Solution is invalid!");
                     }
                 }
             }
+        }
+
+        public static int[] GetRandomVariableOrder(int size)
+        {
+            return Enumerable.Range(0, size).OrderBy(x => _random.Next()).ToArray();
+        }
+
+        public static int[] GetIncrementalVariableOrder(int size)
+        {
+            return Enumerable.Range(0, size).ToArray();
         }
     }
 }

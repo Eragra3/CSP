@@ -13,16 +13,19 @@ namespace Queens.Models
 
         public int MaxN { get; }
 
-        public RowPickingHeuristicsEnum RowPickingHeuristicMethod { get; }
+        public ValuePickingHeuristicsEnum ValuePickingHeuristicMethod { get; }
 
-        public QueenPickingHeuristicsEnum QueenPickingHeuristicMethod { get; }
+        public VariablePickingHeuristicsEnum VariablePickingHeuristicMethod { get; }
 
-        public ConfigurationBatchFile(int minN, int maxN, RowPickingHeuristicsEnum rowPickingMethod, QueenPickingHeuristicsEnum queenPickingMethod)
+        public ExecutorsEnum UsedExecutor { get; }
+
+        public ConfigurationBatchFile(int minN, int maxN, ValuePickingHeuristicsEnum valuePickingMethod, VariablePickingHeuristicsEnum variablePickingMethod, ExecutorsEnum usedExecutor)
         {
             MinN = minN;
             MaxN = maxN;
-            RowPickingHeuristicMethod = rowPickingMethod;
-            QueenPickingHeuristicMethod = queenPickingMethod;
+            ValuePickingHeuristicMethod = valuePickingMethod;
+            VariablePickingHeuristicMethod = variablePickingMethod;
+            UsedExecutor = usedExecutor;
         }
     }
 }

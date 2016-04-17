@@ -18,31 +18,50 @@
                 <RowDefinition Height="1*"></RowDefinition>
                 <RowDefinition Height="1*"></RowDefinition>
                 <RowDefinition Height="1*"></RowDefinition>
-                <RowDefinition Height="1*"></RowDefinition>
-                <RowDefinition Height="1*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="2*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <TextBox Name="MinNTextBox" PreviewTextInput="BoardSizeTextBox_OnPreviewTextInput"
+            <TextBox Name="MinNTextBox" PreviewTextInput="OnPreviewTextInput"
                      VerticalContentAlignment="Center" Grid.Row="0" Grid.Column="0"></TextBox>
             <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalContentAlignment="Center"
                        >Starting N</Label>
-            <TextBox Name="MaxNTextBox" PreviewTextInput="BoardSizeTextBox_OnPreviewTextInput"
+            <TextBox Name="MaxNTextBox" PreviewTextInput="OnPreviewTextInput"
                      VerticalContentAlignment="Center" Grid.Row="1" Grid.Column="0"></TextBox>
             <Label Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalContentAlignment="Center"
                        >Last N</Label>
-            <ComboBox Name="RowPickingMethodComboBox" SelectedIndex="0" Grid.Row="2" BorderThickness="1,0,1,1"
+            <ComboBox Name="RowPickingMethodComboBox" SelectedIndex="1" Grid.Row="2" BorderThickness="1,0,1,1"
                           Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                <ComboBoxItem Name="IncrementComboBoxItem">Increment</ComboBoxItem>
-                <ComboBoxItem Name="RandomComboBoxItem">Random</ComboBoxItem>
+                <ComboBoxItem>Increment</ComboBoxItem>
+                <ComboBoxItem>Random</ComboBoxItem>
             </ComboBox>
             <Label Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalContentAlignment="Center"
                        HorizontalContentAlignment="Left">
                 Row picking method
             </Label>
+            <ComboBox Name="QueenPickingMethodComboBox" SelectedIndex="1" Grid.Row="3" BorderThickness="1,0,1,1"
+                          Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                <ComboBoxItem>Increment</ComboBoxItem>
+                <ComboBoxItem>Random</ComboBoxItem>
+            </ComboBox>
+            <Label Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalContentAlignment="Center"
+                       HorizontalContentAlignment="Left">
+                Queen picking method
+            </Label>
+
+            <Button Grid.Row="4" Grid.Column="0" Name="StartBacktrackingExperimentButton"
+                    Content="Backtracking" Click="StartBacktrackingExperimentButton_OnClick"></Button>
+            <Grid Grid.Row="4" Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0"  Name="StartForwardCheckingExperimentButton"
+                        Content="Forward&#x0a;Checking" Click="StartForwardCheckingExperimentButton_OnClick"></Button>
+                <!--<Button Grid.Column="1"  ></Button>-->
+            </Grid>
         </Grid>
         <DataGrid Name="ExperimentsStatisticsDataGrid" Grid.Column="1" ItemsSource="{Binding ExperimentResults}">
             <!--<DataGrid.Columns>

@@ -8,20 +8,17 @@ namespace Queens.Models
 {
     public class SolutionStatistics
     {
-        public readonly int[] Solution;
+        //public readonly int[] Solution;
 
-        public readonly int NumberOfBacktracks;
+        public readonly int BacktracksCount;
 
         public readonly int N;
 
-        public readonly int NumberOfNewSolutions;
-
-        public SolutionStatistics(int[] solution, int numberOfBacktracks, int n, int numberOfNewSolutions)
+        public SolutionStatistics(int[] solution, int backtracksCount, int n)
         {
-            Solution = solution;
-            NumberOfBacktracks = numberOfBacktracks;
+            //Solution = solution;
+            BacktracksCount = backtracksCount;
             N = n;
-            NumberOfNewSolutions = numberOfNewSolutions;
         }
     }
 }

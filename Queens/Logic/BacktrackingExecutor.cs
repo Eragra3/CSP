@@ -4,147 +4,130 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Queens.Models;
 
 namespace Queens.Logic
 {
-    public class BacktrackingExecutor
+    public static class BacktrackingExecutor
     {
-        public static CSPSolution FindSolution(int n, RowPickingHeuristicsEnum rowPickingHeuristic)
+        public static CSPSolution FindSolution(
+            int n,
+            ValuePickingHeuristicsEnum valuePickingHeuristic,
+            VariablePickingHeuristicsEnum variablePickingHeuristic,
+            Func<int[], int, int, bool> conflictsFunc,
+            int[] domain)
         {
-            var numberOfBacktracks = 0;
+            var backtracksCount = 0;
 
-            var solutionRows = new int[n];
-            for (var i = 0; i < solutionRows.Length; i++)
+            var variablesValues = new int[n];
+            for (var i = 0; i < variablesValues.Length; i++)
             {
-                solutionRows[i] = -1;
+                variablesValues[i] = -1;
             }
 
-            var backtrackedRowsLists = new IList<int>[n];
-            for (var i = 0; i < backtrackedRowsLists.Length; i++)
+            int[] variableEvaluationOrder;
+            switch (variablePickingHeuristic)
             {
-                backtrackedRowsLists[i] = new List<int>(n);
+                case VariablePickingHeuristicsEnum.Increment:
+                    variableEvaluationOrder = QueensHelperMethods.GetIncrementalVariableOrder(n);
+                    break;
+                case VariablePickingHeuristicsEnum.Random:
+                    variableEvaluationOrder = QueensHelperMethods.GetRandomVariableOrder(n);
+                    break;
+                default:
+                    throw new Exception($"{variablePickingHeuristic} is not value of {nameof(VariablePickingHeuristicsEnum)}");
             }
 
-            var allRows = new List<int>();
-            for (var i = 0; i < n; i++)
+
+            var backtrackedValuesLists = new IList<int>[n];
+            for (var i = 0; i < backtrackedValuesLists.Length; i++)
             {
-                allRows.Add(i);
+                backtrackedValuesLists[i] = new List<int>(n);
             }
 
-            var conflictingRows = new List<int>();
+            var conflictingValues = new List<int>();
 
-            for (var columnIndex = 0; columnIndex < solutionRows.Length; columnIndex++)
+            for (var index = 0; index < variableEvaluationOrder.Length; index++)
             {
-                var rowIndex = -1;
-                conflictingRows.Clear();
+                var currentVariableValue = -1;
+                var currentVariableIndex = variableEvaluationOrder[index];
 
-                var noRowFound = false;
+                conflictingValues.Clear();
 
-                var removedObviousConflicts = allRows
-                                .Except(backtrackedRowsLists[columnIndex])
-                                .Except(solutionRows).ToList();
+                var noValidValueInDomain = false;
 
-                while (solutionRows[columnIndex] == -1)
+                var domainWithoutObviousConflicts = domain
+                                .Except(backtrackedValuesLists[currentVariableIndex])
+                                .Except(variablesValues).ToList();
+
+                while (variablesValues[currentVariableIndex] == -1)
                 {
-                    switch (rowPickingHeuristic)
+                    switch (valuePickingHeuristic)
                     {
-                        case RowPickingHeuristicsEnum.Increment:
-                            rowIndex = QueensHelperMethods.GetNextPossibleRow(
-                                removedObviousConflicts
-                                .Except(conflictingRows)
+                        case ValuePickingHeuristicsEnum.Increment:
+                            currentVariableValue = QueensHelperMethods.GetMinimumValue(
+                                domainWithoutObviousConflicts
+                                .Except(conflictingValues)
                                 .ToList());
-                            noRowFound = rowIndex == -1;
+                            noValidValueInDomain = currentVariableValue == -1;
                             break;
-                        case RowPickingHeuristicsEnum.Random:
-                            var possibleRows = removedObviousConflicts.Except(conflictingRows).ToList();
+                        case ValuePickingHeuristicsEnum.Random:
+                            var possibleRows = domainWithoutObviousConflicts.Except(conflictingValues).ToList();
                             if (possibleRows.Count == 0)
-                                noRowFound = true;
+                                noValidValueInDomain = true;
                             else
-                                rowIndex = QueensHelperMethods.GetRandomRow(possibleRows);
+                                currentVariableValue = QueensHelperMethods.GetRandomValue(possibleRows);
                             break;
                         default:
-                            break;
+                            throw new Exception($"Not existing value picking heuristic - {valuePickingHeuristic}");
                     }
-                    if (noRowFound)
+
+                    if (noValidValueInDomain)
                     {
-                        solutionRows[columnIndex] = -1;
+                        variablesValues[currentVariableIndex] = -1;
                         break;
                     }
 
-                    var conflicts = false;
-                    for (var k = 0; !conflicts && k < solutionRows.Length; k++)
-                    {
-                        if (k == columnIndex || solutionRows[k] == -1) continue;
+                    var conflicts = conflictsFunc(variablesValues, currentVariableValue, currentVariableIndex);
 
-                        conflicts = QueensHelperMethods.Conflicts(k, solutionRows[k], columnIndex, rowIndex);
-                    }
 
                     if (conflicts)
                     {
-                        conflictingRows.Add(rowIndex);
+                        conflictingValues.Add(currentVariableValue);
                     }
                     else
                     {
-                        solutionRows[columnIndex] = rowIndex;
+                        variablesValues[currentVariableIndex] = currentVariableValue;
                     }
                 }
 
                 //go back
-                if (solutionRows[columnIndex] == -1)
+                if (variablesValues[currentVariableIndex] == -1)
                 {
-                    numberOfBacktracks++;
-                    backtrackedRowsLists[columnIndex].Clear();
+                    backtracksCount++;
+                    backtrackedValuesLists[currentVariableIndex].Clear();
 
-                    columnIndex--;
-
-                    if (columnIndex < 0)
+                    index--;
+                    if (index < 0)
                     {
-                        return new CSPSolution(solutionRows, numberOfBacktracks, n);
+                        return new CSPSolution(variablesValues, backtracksCount, n);
                     }
 
-                    backtrackedRowsLists[columnIndex].Add(solutionRows[columnIndex]);
-                    solutionRows[columnIndex] = -1;
+                    //previous variable cannot use this value
+                    var prevIndex = variableEvaluationOrder[index];
+                    backtrackedValuesLists[prevIndex].Add(variablesValues[prevIndex]);
+                    variablesValues[prevIndex] = -1;
 
-                    columnIndex--;
+                    //quickfix, because for will increment index
+                    index--;
                 }
-
             }
 
-            var solution = new CSPSolution(solutionRows, numberOfBacktracks, n);
+            var solution = new CSPSolution(variablesValues, backtracksCount, n);
 
             return solution;
-        }
-
-        public static IEnumerable<RunResultStatistics> RunExperiment(ConfigurationBatchFile config)
-        {
-            for (int currentN = 1; currentN < config.MaxN + 1; currentN++)
-            {
-                var result = new RunResultStatistics(currentN);
-
-                yield return FindAllSolutions(currentN, config.RowPickingHeuristicMethod, config.QueenPickingHeuristicMethod);
-
-            }
-        }
-
-        public static RunResultStatistics FindAllSolutions(
-            int n,
-            RowPickingHeuristicsEnum rowPickingMethod,
-            QueenPickingHeuristicsEnum queenPickingMethod)
-        {
-            var result = new RunResultStatistics(n);
-
-            //while (result.AllRunsWithNewSolution.Count != n)
-            //{
-
-            //}
-
-            var solution = FindSolution(n, rowPickingMethod);
-
-            result.AllRunsWithNewSolution.Add(new SolutionStatistics(solution.Solution, solution.NumberOfBacktracks, n, 1));
-
-            return result;
         }
     }
 }

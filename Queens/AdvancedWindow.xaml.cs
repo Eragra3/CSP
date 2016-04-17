@@ -1,8 +1,11 @@
 ﻿using Queens.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Queens.Logic;
 
 namespace Queens
 {
@@ -20,56 +24,99 @@ namespace Queens
     /// </summary>
     public partial class AdvancedWindow : Window
     {
-        public IList<ExperimentResultStatistics> ExperimentResults { get; set; }
+        private ObservableCollection<SingleRunResultStatistics> _experimentResults { get; set; }
+
+        //private IList<ExperimentResultStatistics>
 
         public AdvancedWindow()
         {
             InitializeComponent();
 
-            ExperimentResults = new List<ExperimentResultStatistics>(100);
+            _experimentResults = new ObservableCollection<SingleRunResultStatistics>();
+
+            MinNTextBox.Text = "0";
+            MaxNTextBox.Text = "0";
 
             DataContext = new
             {
-                ExperimentResults = ExperimentResults
+                ExperimentResults = _experimentResults
             };
         }
 
-        public void StartExperimentBacktracking()
+        private async void StartExperimentBacktracking()
         {
+            var config = ReadValues(ExecutorsEnum.Backtracking);
+            var iterator = CSPExecutor.RunExperiment(config);
 
+            foreach (var run in iterator)
+            {
+                _experimentResults.Add(run);
+                await Task.Delay(100);
+            }
+        }
+        private async void StartExperimentForwardChecking()
+        {
+            var config = ReadValues(ExecutorsEnum.ForwardChecking);
+            var iterator = CSPExecutor.RunExperiment(config);
+
+            foreach (var run in iterator)
+            {
+                _experimentResults.Add(run);
+                await Task.Delay(100);
+            }
         }
 
 
-        private void ReadValues()
+        private ConfigurationBatchFile ReadValues(ExecutorsEnum usedExecutor)
         {
+            int minN;
+            int maxN;
+            ValuePickingHeuristicsEnum valuePickingMethod;
+            VariablePickingHeuristicsEnum variablePickingMethod;
             try
             {
-                Configuration.BoardSize = int.Parse(BoardSizeTextBox.Text);
+                minN = int.Parse(MinNTextBox.Text);
             }
             catch (Exception)
             {
-                Configuration.BoardSize = 0;
+                minN = 0;
             }
             try
             {
-                Configuration.RowPickingHeuristic = (RowPickingHeuristicsEnum)
-                    Enum.Parse(typeof(RowPickingHeuristicsEnum), RowPickingMethodComboBox.Text);
+                maxN = int.Parse(MaxNTextBox.Text);
             }
             catch (Exception)
             {
-                Configuration.RowPickingHeuristic = RowPickingHeuristicsEnum.Increment;
+                maxN = 0;
             }
             try
             {
-                Configuration.RenderBoard = RenderBoardCheckBox.IsChecked ?? false;
+                valuePickingMethod = (ValuePickingHeuristicsEnum)
+                    Enum.Parse(typeof(ValuePickingHeuristicsEnum), RowPickingMethodComboBox.Text);
             }
             catch (Exception)
             {
-                Configuration.RenderBoard = false;
+                valuePickingMethod = ValuePickingHeuristicsEnum.Increment;
             }
+            try
+            {
+                variablePickingMethod = (VariablePickingHeuristicsEnum)
+                    Enum.Parse(typeof(VariablePickingHeuristicsEnum), QueenPickingMethodComboBox.Text);
+            }
+            catch (Exception)
+            {
+                variablePickingMethod = VariablePickingHeuristicsEnum.Random;
+            }
+
+            return new ConfigurationBatchFile(
+                minN,
+                maxN,
+                valuePickingMethod,
+                variablePickingMethod,
+                usedExecutor);
         }
 
-        private void BoardSizeTextBox_OnPreviewTextInput(object sender, TextCompositionEventArgs e)
+        private void OnPreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = IsPositiveInteger(e.Text);
         }
@@ -78,6 +125,16 @@ namespace Queens
         {
             var regex = new Regex("[0-9]+");
             return !regex.IsMatch(text);
+        }
+
+        private void StartBacktrackingExperimentButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            StartExperimentBacktracking();
+        }
+
+        private void StartForwardCheckingExperimentButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            StartExperimentForwardChecking();
         }
     }
 }

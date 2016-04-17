@@ -177,7 +177,10 @@ namespace Queens
             BlockControls();
             var solution = await Task.Factory.StartNew(() => ForwardCheckingExecutor.FindSolution(
                 Configuration.BoardSize,
-                Configuration.RowPickingHeuristic
+                Configuration.ValuePickingHeuristic,
+                Configuration.VariablePickingHeuristic,
+                QueensHelperMethods.QueensCheckForConflicts,
+                Configuration.QueensDomain
                 ));
             UnblockControls();
 
@@ -193,7 +196,10 @@ namespace Queens
             BlockControls();
             var solution = await Task.Factory.StartNew(() => BacktrackingExecutor.FindSolution(
                 Configuration.BoardSize,
-                Configuration.RowPickingHeuristic
+                Configuration.ValuePickingHeuristic,
+                Configuration.VariablePickingHeuristic,
+                QueensHelperMethods.QueensCheckForConflicts,
+                Configuration.QueensDomain
                 ));
             UnblockControls();
 
@@ -214,12 +220,12 @@ namespace Queens
             }
             try
             {
-                Configuration.RowPickingHeuristic = (RowPickingHeuristicsEnum)
-                    Enum.Parse(typeof(RowPickingHeuristicsEnum), RowPickingMethodComboBox.Text);
+                Configuration.ValuePickingHeuristic = (ValuePickingHeuristicsEnum)
+                    Enum.Parse(typeof(ValuePickingHeuristicsEnum), RowPickingMethodComboBox.Text);
             }
             catch (Exception)
             {
-                Configuration.RowPickingHeuristic = RowPickingHeuristicsEnum.Increment;
+                Configuration.ValuePickingHeuristic = ValuePickingHeuristicsEnum.Increment;
             }
             try
             {

@@ -64,6 +64,7 @@
     </Compile>
     <Compile Include="Configuration.cs" />
     <Compile Include="Extensions\ExtensionMethods.cs" />
+    <Compile Include="Logic\CSPExecutor.cs" />
     <Compile Include="Models\ConfigurationBatchFile.cs" />
     <Compile Include="Models\ExperimentResultStatistics.cs" />
     <Compile Include="Models\SolutionStatistics.cs" />
