@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Queens.Models;
+using Sudoku.Logic;
+using static Sudoku.Configuration;
 
 namespace Queens.Logic
 {
@@ -31,10 +33,10 @@ namespace Queens.Logic
             switch (variablePickingHeuristic)
             {
                 case VariablePickingHeuristicsEnum.Increment:
-                    variableEvaluationOrder = QueensHelperMethods.GetIncrementalVariableOrder(variablesCount);
+                    variableEvaluationOrder = SudokuHelperMethods.GetIncrementalVariableOrder(variablesCount);
                     break;
                 case VariablePickingHeuristicsEnum.Random:
-                    variableEvaluationOrder = QueensHelperMethods.GetRandomVariableOrder(variablesCount);
+                    variableEvaluationOrder = SudokuHelperMethods.GetRandomVariableOrder(variablesCount);
                     break;
                 default:
                     throw new Exception($"{variablePickingHeuristic} is not value of {nameof(VariablePickingHeuristicsEnum)}");
@@ -67,7 +69,7 @@ namespace Queens.Logic
                     switch (valuePickingHeuristic)
                     {
                         case ValuePickingHeuristicsEnum.Increment:
-                            currentVariableValue = QueensHelperMethods.GetMinimumValue(
+                            currentVariableValue = SudokuHelperMethods.GetMinimumValue(
                                 domainWithoutObviousConflicts
                                 .Except(conflictingValues)
                                 .ToList());
@@ -78,7 +80,7 @@ namespace Queens.Logic
                             if (possibleRows.Count == 0)
                                 noValidValueInDomain = true;
                             else
-                                currentVariableValue = QueensHelperMethods.GetRandomValue(possibleRows);
+                                currentVariableValue = SudokuHelperMethods.GetRandomValue(possibleRows);
                             break;
                         default:
                             throw new Exception($"Not existing value picking heuristic - {valuePickingHeuristic}");

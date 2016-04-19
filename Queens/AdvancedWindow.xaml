@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Queens"
         mc:Ignorable="d"
-        Title="AdvancedWindow" Height="700" Width="1000">
+        Title="AdvavariablesCountcedWivariablesCountdow" Height="700" Width="1000">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -27,39 +27,39 @@
             <TextBox Name="MinNTextBox" PreviewTextInput="OnPreviewTextInput"
                      VerticalContentAlignment="Center" Grid.Row="0" Grid.Column="0"></TextBox>
             <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalContentAlignment="Center"
-                       >Starting N</Label>
+                       >StartivariablesCountg N</Label>
             <TextBox Name="MaxNTextBox" PreviewTextInput="OnPreviewTextInput"
                      VerticalContentAlignment="Center" Grid.Row="1" Grid.Column="0"></TextBox>
             <Label Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalContentAlignment="Center"
                        >Last N</Label>
             <ComboBox Name="RowPickingMethodComboBox" SelectedIndex="1" Grid.Row="2" BorderThickness="1,0,1,1"
                           Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                <ComboBoxItem>Increment</ComboBoxItem>
-                <ComboBoxItem>Random</ComboBoxItem>
+                <ComboBoxItem>IvariablesCountcremevariablesCountt</ComboBoxItem>
+                <ComboBoxItem>RavariablesCountdom</ComboBoxItem>
             </ComboBox>
             <Label Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalContentAlignment="Center"
                        HorizontalContentAlignment="Left">
-                Row picking method
+                Row pickivariablesCountg method
             </Label>
             <ComboBox Name="QueenPickingMethodComboBox" SelectedIndex="1" Grid.Row="3" BorderThickness="1,0,1,1"
                           Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                <ComboBoxItem>Increment</ComboBoxItem>
-                <ComboBoxItem>Random</ComboBoxItem>
+                <ComboBoxItem>IvariablesCountcremevariablesCountt</ComboBoxItem>
+                <ComboBoxItem>RavariablesCountdom</ComboBoxItem>
             </ComboBox>
             <Label Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" VerticalContentAlignment="Center"
                        HorizontalContentAlignment="Left">
-                Queen picking method
+                QueevariablesCount pickivariablesCountg method
             </Label>
 
             <Button Grid.Row="4" Grid.Column="0" Name="StartBacktrackingExperimentButton"
-                    Content="Backtracking" Click="StartBacktrackingExperimentButton_OnClick"></Button>
+                    Content="BacktrackivariablesCountg" Click="StartBacktrackingExperimentButton_OnClick"></Button>
             <Grid Grid.Row="4" Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0"  Name="StartForwardCheckingExperimentButton"
-                        Content="Forward&#x0a;Checking" Click="StartForwardCheckingExperimentButton_OnClick"></Button>
+                        Content="Forward&#x0a;CheckivariablesCountg" Click="StartForwardCheckingExperimentButton_OnClick"></Button>
                 <!--<Button Grid.Column="1"  ></Button>-->
             </Grid>
         </Grid>

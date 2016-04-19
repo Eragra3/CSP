@@ -6,24 +6,42 @@
         xmlns:local="clr-namespace:Sudoku"
         xmlns:models="clr-namespace:Sudoku.Models"
         mc:Ignorable="d"
-        Title="MainWindow" Height="900" Width="800">
+        Title="MainWindow" Height="700" Width="600">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="8*"/>
+            <RowDefinition Height="7*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="1" Name="BoardPanel">
-            <Grid.RowDefinitions >
-                <RowDefinition Height="1*"></RowDefinition>
-                <RowDefinition Height="1*"></RowDefinition>
-            </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+            </Grid.RowDefinitions>
 
-            <models:Tile></models:Tile>
+            <TextBox Name="SubBoardSizeTextBox" HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"></TextBox>
+            <TextBox Name="HolesCountTextBox" HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center" Grid.Row="1" Grid.Column="0"></TextBox>
+            
+            <Button Grid.Column="5" Grid.Row="0" Content="Generate Sudoku"
+                    Click="GenerateSudokuButtonClick"></Button>
+
+            <Button Grid.Column="4" Grid.Row="0" Content="Backtracking"
+                    Click="BacktrackingButtonClick"></Button>
+
         </Grid>
+        
+        <Grid Grid.Row="1" Name="BoardPanel" KeyDown="BoardPanel_KeyDown">
+        </Grid>
+        
     </Grid>
 </Window>

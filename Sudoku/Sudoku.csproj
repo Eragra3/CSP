@@ -55,6 +55,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Logic\BacktrackingExecutor.cs" />
+    <Compile Include="Logic\CSPExecutor.cs" />
+    <Compile Include="Logic\ForwardCheckingExecutor.cs" />
+    <Compile Include="Logic\SudokuHelperMethods.cs" />
+    <Compile Include="Models\ConfigurationBatchFile.cs" />
+    <Compile Include="Models\CSPSolution.cs" />
+    <Compile Include="Models\ExperimentResultStatistics.cs" />
+    <Compile Include="Models\RunResultStatistics.cs" />
+    <Compile Include="Models\SolutionStatistics.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

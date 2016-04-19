@@ -13,7 +13,7 @@ namespace Queens.Logic
     public static class BacktrackingExecutor
     {
         public static CSPSolution FindSolution(
-            int variablesCount,
+            int n,
             ValuePickingHeuristicsEnum valuePickingHeuristic,
             VariablePickingHeuristicsEnum variablePickingHeuristic,
             Func<int[], int, int, int[], bool> conflictsFunc,
@@ -21,7 +21,7 @@ namespace Queens.Logic
         {
             var backtracksCount = 0;
 
-            var variablesValues = new int[variablesCount];
+            var variablesValues = new int[n];
             for (var i = 0; i < variablesValues.Length; i++)
             {
                 variablesValues[i] = -1;
@@ -31,20 +31,20 @@ namespace Queens.Logic
             switch (variablePickingHeuristic)
             {
                 case VariablePickingHeuristicsEnum.Increment:
-                    variableEvaluationOrder = QueensHelperMethods.GetIncrementalVariableOrder(variablesCount);
+                    variableEvaluationOrder = QueensHelperMethods.GetIncrementalVariableOrder(n);
                     break;
                 case VariablePickingHeuristicsEnum.Random:
-                    variableEvaluationOrder = QueensHelperMethods.GetRandomVariableOrder(variablesCount);
+                    variableEvaluationOrder = QueensHelperMethods.GetRandomVariableOrder(n);
                     break;
                 default:
                     throw new Exception($"{variablePickingHeuristic} is not value of {nameof(VariablePickingHeuristicsEnum)}");
             }
 
 
-            var backtrackedValuesLists = new IList<int>[variablesCount];
+            var backtrackedValuesLists = new IList<int>[n];
             for (var i = 0; i < backtrackedValuesLists.Length; i++)
             {
-                backtrackedValuesLists[i] = new List<int>(variablesCount);
+                backtrackedValuesLists[i] = new List<int>(n);
             }
 
             var conflictingValues = new List<int>();
@@ -112,7 +112,7 @@ namespace Queens.Logic
                     index--;
                     if (index < 0)
                     {
-                        return new CSPSolution(variablesValues, backtracksCount, variablesCount);
+                        return new CSPSolution(variablesValues, backtracksCount, n);
                     }
 
                     //previous variable cannot use this value
@@ -125,7 +125,7 @@ namespace Queens.Logic
                 }
             }
 
-            var solution = new CSPSolution(variablesValues, backtracksCount, variablesCount);
+            var solution = new CSPSolution(variablesValues, backtracksCount, n);
 
             return solution;
         }

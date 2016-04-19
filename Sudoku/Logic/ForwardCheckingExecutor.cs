@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Queens.Models;
+using Sudoku.Logic;
+using static Sudoku.Configuration;
 
 namespace Queens.Logic
 {
@@ -30,10 +32,10 @@ namespace Queens.Logic
             switch (variablePickingHeuristic)
             {
                 case VariablePickingHeuristicsEnum.Increment:
-                    variableEvaluationOrder = QueensHelperMethods.GetIncrementalVariableOrder(n);
+                    variableEvaluationOrder = SudokuHelperMethods.GetIncrementalVariableOrder(n);
                     break;
                 case VariablePickingHeuristicsEnum.Random:
-                    variableEvaluationOrder = QueensHelperMethods.GetRandomVariableOrder(n);
+                    variableEvaluationOrder = SudokuHelperMethods.GetRandomVariableOrder(n);
                     break;
                 default:
                     throw new Exception($"{variablePickingHeuristic} is not value of {nameof(VariablePickingHeuristicsEnum)}");
@@ -73,10 +75,10 @@ namespace Queens.Logic
                     switch (valuePickingHeuristic)
                     {
                         case ValuePickingHeuristicsEnum.Increment:
-                            currentVariableValue = QueensHelperMethods.GetMinimumValue(validValues);
+                            currentVariableValue = SudokuHelperMethods.GetMinimumValue(validValues);
                             break;
                         case ValuePickingHeuristicsEnum.Random:
-                            currentVariableValue = QueensHelperMethods.GetRandomValue(validValues);
+                            currentVariableValue = SudokuHelperMethods.GetRandomValue(validValues);
                             break;
                         default:
                             throw new Exception($"Not existing value picking heuristic - {valuePickingHeuristic}");

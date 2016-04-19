@@ -80,6 +80,7 @@ namespace Queens
                 for (var j = 0; j < Board[i].Length; j++)
                 {
                     var tile = new Tile();
+
                     if ((j + i) % 2 == 0) tile.TileLabel.Background = Brushes.DeepSkyBlue;
                     tile.SetValue(Grid.ColumnProperty, i);
                     tile.SetValue(Grid.RowProperty, j);
