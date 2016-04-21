@@ -66,7 +66,7 @@ namespace Queens
 
         public static bool RenderBoard = true;
 
-        public static int MaxExperimentTimeInSeconds = 60;
+        public static int MaxExperimentTimeInSeconds = 120;
     }
 
     public enum ValuePickingHeuristicsEnum

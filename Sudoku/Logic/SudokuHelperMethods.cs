@@ -9,16 +9,7 @@ namespace Sudoku.Logic
         [ThreadStatic]
         private static Random _random;
 
-        private static Random Random
-        {
-            get
-            {
-                if (_random == null)
-                    _random = new Random();
-
-                return _random;
-            }
-        }
+        private static Random Random => _random ?? (_random = new Random());
 
         public static bool Conflicts(int[] solution, int[] domain)
         {
@@ -32,21 +23,23 @@ namespace Sudoku.Logic
             // check rows
             for (var i = 0; isValid && i < solution.Length; i++)
             {
+                if (i % boardSize == 0)
+                {
+                    usedValues.Clear();
+                }
+
                 var value = solution[i];
                 if (value == -1 || value == 0) continue;
 
                 isValid = domain.Contains(value) && !usedValues.Contains(value);
+
+
                 if (!isValid) continue;
 
                 usedValues.Add(value);
-
-                if ((i + 1) % boardSize == 0)
-                {
-                    usedValues.Clear();
-                }
             }
 
-            // check column
+            // check columns
             for (var i = 0; isValid && i < boardSize; i++)
             {
                 usedValues.Clear();
@@ -90,7 +83,7 @@ namespace Sudoku.Logic
                 }
             }
 
-            return isValid;
+            return !isValid;
         }
 
         public static bool IsValid(int[] solution, int[] domain)
@@ -104,7 +97,7 @@ namespace Sudoku.Logic
 
             if (!isValid) return false;
 
-            return Conflicts(solution, domain);
+            return !Conflicts(solution, domain);
         }
 
         public static SudokuModel RemoveRandomFields(int[][] sudoku, int removedFieldsCount)
@@ -123,7 +116,7 @@ namespace Sudoku.Logic
                 int index;
                 do
                 {
-                    index = _random.Next(0, boardSize * boardSize);
+                    index = Random.Next(0, boardSize * boardSize);
                 } while (removedFields.Contains(index));
 
                 removedFields.Add(index);
@@ -147,6 +140,16 @@ namespace Sudoku.Logic
             return result;
         }
 
+        public static int[] GetDomain(int boardSize)
+        {
+            var domain = new int[boardSize];
+            var number = 1;
+            for (var i = 0; i < boardSize; i++)
+            {
+                domain[i] = number++;
+            }
+            return domain;
+        }
 
         public class SudokuModel
         {
@@ -164,22 +167,23 @@ namespace Sudoku.Logic
         /// <summary>
         /// return next possible int or -1
         /// </summary>
-        /// <param name="possibleRows"></param>
+        /// <param name="possibleValues"></param>
         /// <returns></returns>
-        public static int GetMinimumValue(List<int> possibleRows)
+        public static int GetMinimumValue(List<int> possibleValues)
         {
-            if (possibleRows.Count == 0) return -1;
-            return possibleRows.Min();
+            if (possibleValues.Count == 0) return -1;
+            return possibleValues.Min();
         }
 
-        public static int[] GetRandomVariableOrder(int size)
+        public static int[] GetRandomVariableOrder(int[] variableIndeces)
         {
-            return Enumerable.Range(0, size).OrderBy(x => Random.Next()).ToArray();
+            return Random.Shuffle(variableIndeces);
         }
 
-        public static int[] GetIncrementalVariableOrder(int size)
+        public static int[] GetIncrementalVariableOrder(int[] variableIndeces)
         {
-            return Enumerable.Range(0, size).ToArray();
+            Array.Sort(variableIndeces);
+            return variableIndeces;
         }
 
     }

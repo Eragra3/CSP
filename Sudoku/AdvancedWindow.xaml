@@ -1,9 +1,8 @@
-﻿<Window x:Class="Queens.AdvancedWindow"
+﻿<Window x:Class="Sudoku.AdvancedWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Queens"
         mc:Ignorable="d"
         Title="Advanced Window" Height="700" Width="1000">
     <Grid>
@@ -13,6 +12,7 @@
         </Grid.ColumnDefinitions>
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="1*"></RowDefinition>
                 <RowDefinition Height="1*"></RowDefinition>
                 <RowDefinition Height="1*"></RowDefinition>
                 <RowDefinition Height="1*"></RowDefinition>
@@ -53,6 +53,13 @@
 
             <Button Grid.Row="4" Grid.Column="0" Name="StartBacktrackingExperimentButton"
                     Content="Backtracking" Click="StartBacktrackingExperimentButton_OnClick"></Button>
+
+
+            <TextBox Name="BoardSizeTextBox" PreviewTextInput="OnPreviewTextInput"
+                     VerticalContentAlignment="Center" Grid.Row="5" Grid.Column="0"></TextBox>
+            <Label Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" VerticalContentAlignment="Center"
+                       >Board size</Label>
+
             <Grid Grid.Row="4" Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
@@ -61,6 +68,7 @@
                 <Button Grid.Column="0"  Name="StartForwardCheckingExperimentButton"
                         Content="Forward&#x0a;Checking" Click="StartForwardCheckingExperimentButton_OnClick"></Button>
                 <!--<Button Grid.Column="1"  ></Button>-->
+
             </Grid>
         </Grid>
         <DataGrid Name="ExperimentsStatisticsDataGrid" Grid.Column="1" ItemsSource="{Binding ExperimentResults}">

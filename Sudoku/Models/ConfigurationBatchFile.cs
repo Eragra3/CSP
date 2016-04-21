@@ -1,31 +1,27 @@
-﻿using Queens.Logic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Queens.Models
+﻿namespace Sudoku.Models
 {
     public class ConfigurationBatchFile
     {
-        public int MinN { get; }
+        public int MinHoles { get; }
 
-        public int MaxN { get; }
+        public int MaxHoles { get; }
 
-        public ValuePickingHeuristicsEnum ValuePickingHeuristicMethod { get; }
+        public int BoardSize { get; }
 
-        public VariablePickingHeuristicsEnum VariablePickingHeuristicMethod { get; }
+        public Configuration.ValuePickingHeuristicsEnum ValuePickingHeuristicMethod { get; }
 
-        public ExecutorsEnum UsedExecutor { get; }
+        public Configuration.VariablePickingHeuristicsEnum VariablePickingHeuristicMethod { get; }
 
-        public ConfigurationBatchFile(int minN, int maxN, ValuePickingHeuristicsEnum valuePickingMethod, VariablePickingHeuristicsEnum variablePickingMethod, ExecutorsEnum usedExecutor)
+        public Configuration.ExecutorsEnum UsedExecutor { get; }
+
+        public ConfigurationBatchFile(int minHoles, int maxHoles, Configuration.ValuePickingHeuristicsEnum valuePickingMethod, Configuration.VariablePickingHeuristicsEnum variablePickingMethod, Configuration.ExecutorsEnum usedExecutor, int boardSize)
         {
-            MinN = minN;
-            MaxN = maxN;
+            MinHoles = minHoles;
+            MaxHoles = maxHoles;
             ValuePickingHeuristicMethod = valuePickingMethod;
             VariablePickingHeuristicMethod = variablePickingMethod;
             UsedExecutor = usedExecutor;
+            BoardSize = boardSize;
         }
     }
 }

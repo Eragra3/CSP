@@ -1,24 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Queens.Models
+﻿namespace Sudoku.Models
 {
     public class SolutionStatistics
     {
-        //public readonly int[] Solution;
-
         public readonly int BacktracksCount;
 
-        public readonly int N;
+        public readonly int HolesCount;
 
-        public SolutionStatistics(int[] solution, int backtracksCount, int n)
+        public readonly int BoardSize;
+
+        public SolutionStatistics(int backtracksCount, int holesCount, int boardSize)
         {
-            //Solution = solution;
             BacktracksCount = backtracksCount;
-            N = n;
+            HolesCount = holesCount;
+            BoardSize = boardSize;
         }
     }
 }

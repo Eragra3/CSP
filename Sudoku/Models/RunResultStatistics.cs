@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace Queens.Models
+namespace Sudoku.Models
 {
     public class ExperimentResultStatistics
     {
@@ -15,7 +11,7 @@ namespace Queens.Models
         public ExperimentResultStatistics(ConfigurationBatchFile configuration, IList<SingleRunResultStatistics> allRuns = null)
         {
             Configuration = configuration;
-            AllRuns = allRuns ?? new List<SingleRunResultStatistics>(configuration.MaxN + 1 - configuration.MinN);
+            AllRuns = allRuns ?? new List<SingleRunResultStatistics>(configuration.MaxHoles + 1 - configuration.MinHoles);
         }
     }
 }

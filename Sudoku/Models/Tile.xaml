@@ -1,11 +1,10 @@
-﻿<UserControl x:Class="Queens.Models.Tile"
+﻿<UserControl x:Class="Sudoku.Models.Tile"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Queens.Models"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="100" Margin="2">
-    <Label Name="TileLabel" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-               Padding="0" Foreground="White" Background="DarkOrange"></Label>
+    <TextBox Name="ContentTextBox" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+               Padding="0" MaxLength="2"></TextBox>
 </UserControl>

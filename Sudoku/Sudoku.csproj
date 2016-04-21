@@ -55,6 +55,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AdvancedWindow.xaml.cs">
+      <DependentUpon>AdvancedWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Logic\BacktrackingExecutor.cs" />
     <Compile Include="Logic\CSPExecutor.cs" />
     <Compile Include="Logic\ForwardCheckingExecutor.cs" />
@@ -64,6 +68,13 @@
     <Compile Include="Models\ExperimentResultStatistics.cs" />
     <Compile Include="Models\RunResultStatistics.cs" />
     <Compile Include="Models\SolutionStatistics.cs" />
+    <Compile Include="StatisicsWindow.xaml.cs">
+      <DependentUpon>StatisicsWindow.xaml</DependentUpon>
+    </Compile>
+    <Page Include="AdvancedWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -80,6 +91,10 @@
     <Page Include="Models\Tile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="StatisicsWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

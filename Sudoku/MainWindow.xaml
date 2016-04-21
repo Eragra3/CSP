@@ -16,11 +16,12 @@
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+                <ColumnDefinition Width="2.5*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"></RowDefinition>
@@ -29,14 +30,50 @@
 
             <TextBox Name="SubBoardSizeTextBox" HorizontalContentAlignment="Center"
                     VerticalContentAlignment="Center"></TextBox>
+            <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalContentAlignment="Center"
+                       HorizontalContentAlignment="Left">
+                Sub-board size
+            </Label>
             <TextBox Name="HolesCountTextBox" HorizontalContentAlignment="Center"
                     VerticalContentAlignment="Center" Grid.Row="1" Grid.Column="0"></TextBox>
-            
+            <Label Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalContentAlignment="Center"
+                       HorizontalContentAlignment="Left">
+                Holes count
+            </Label>
+
+            <ComboBox Name="ValuePickingMethodComboBox" SelectedIndex="1" Grid.Row="0" BorderThickness="1,0,1,1"
+                          Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                <ComboBoxItem>Increment</ComboBoxItem>
+                <ComboBoxItem>Random</ComboBoxItem>
+            </ComboBox>
+            <Label Grid.Row="0" Grid.Column="3" HorizontalAlignment="Left" VerticalContentAlignment="Center"
+                       HorizontalContentAlignment="Left">
+                Value picking method
+            </Label>
+            <ComboBox Name="VariablePickingMethodComboBox" SelectedIndex="1" Grid.Row="1" BorderThickness="1,0,1,1"
+                          Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                <ComboBoxItem>Increment</ComboBoxItem>
+                <ComboBoxItem>Random</ComboBoxItem>
+            </ComboBox>
+            <Label Grid.Row="1" Grid.Column="3" HorizontalAlignment="Left" VerticalContentAlignment="Center"
+                       HorizontalContentAlignment="Left">
+                Variable picking method
+            </Label>
+
             <Button Grid.Column="5" Grid.Row="0" Content="Generate Sudoku"
                     Click="GenerateSudokuButtonClick"></Button>
+            <Button Grid.Column="5" Grid.Row="1" Content="Clear"
+                    Click="ClearButtonClick"></Button>
 
             <Button Grid.Column="4" Grid.Row="0" Content="Backtracking"
                     Click="BacktrackingButtonClick"></Button>
+            <Button Grid.Column="4" Grid.Row="1" Content="Forward Checking"
+                    Click="ForwardCheckingButtonClick"></Button>
+
+            <Button Grid.Column="6" Grid.Row="0" Content="Advanced"
+                    Click="AdvancedButtonClick"></Button>
+            <Button Grid.Column="6" Grid.Row="1" Content="Remove fields"
+                    Click="RemoveFieldsClick"></Button>
 
         </Grid>
         

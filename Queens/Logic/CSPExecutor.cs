@@ -13,7 +13,7 @@ namespace Queens.Logic
     {
         public static IEnumerable<SingleRunResultStatistics> RunExperiment(ConfigurationBatchFile config)
         {
-            for (int currentN = config.MinN; currentN < config.MaxN + 1; currentN++)
+            for (var currentN = config.MinN; currentN < config.MaxN + 1; currentN++)
             {
                 yield return FindAllSolutions(
                     currentN,

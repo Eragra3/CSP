@@ -1,23 +1,13 @@
-﻿using Queens.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Queens.Logic;
+using Sudoku.Logic;
+using Sudoku.Models;
 
-namespace Queens
+namespace Sudoku
 {
     /// <summary>
     /// Interaction logic for AdvancedWindow.xaml
@@ -36,6 +26,7 @@ namespace Queens
 
             MinNTextBox.Text = "0";
             MaxNTextBox.Text = "0";
+            BoardSizeTextBox.Text = "0";
 
             DataContext = new
             {
@@ -45,8 +36,10 @@ namespace Queens
 
         private async void StartExperimentBacktracking()
         {
-            var config = ReadValues(ExecutorsEnum.Backtracking);
-            var iterator = CSPExecutor.RunExperiment(config);
+            var config = ReadValues(Configuration.ExecutorsEnum.Backtracking);
+            var randomSolution = Configuration.GetRandom3x3Sudoku;
+
+            var iterator = CSPExecutor.RunExperimentRepeat(config, 5, randomSolution);
 
             foreach (var run in iterator)
             {
@@ -56,8 +49,10 @@ namespace Queens
         }
         private async void StartExperimentForwardChecking()
         {
-            var config = ReadValues(ExecutorsEnum.ForwardChecking);
-            var iterator = CSPExecutor.RunExperiment(config);
+            var config = ReadValues(Configuration.ExecutorsEnum.ForwardChecking);
+            var randomSolution = Configuration.GetRandom3x3Sudoku;
+
+            var iterator = CSPExecutor.RunExperimentRepeat(config, 5, randomSolution);
 
             foreach (var run in iterator)
             {
@@ -67,12 +62,13 @@ namespace Queens
         }
 
 
-        private ConfigurationBatchFile ReadValues(ExecutorsEnum usedExecutor)
+        private ConfigurationBatchFile ReadValues(Configuration.ExecutorsEnum usedExecutor)
         {
             int minN;
             int maxN;
-            ValuePickingHeuristicsEnum valuePickingMethod;
-            VariablePickingHeuristicsEnum variablePickingMethod;
+            Configuration.ValuePickingHeuristicsEnum valuePickingMethod;
+            Configuration.VariablePickingHeuristicsEnum variablePickingMethod;
+            int boardSize;
             try
             {
                 minN = int.Parse(MinNTextBox.Text);
@@ -91,21 +87,29 @@ namespace Queens
             }
             try
             {
-                valuePickingMethod = (ValuePickingHeuristicsEnum)
-                    Enum.Parse(typeof(ValuePickingHeuristicsEnum), RowPickingMethodComboBox.Text);
+                valuePickingMethod = (Configuration.ValuePickingHeuristicsEnum)
+                    Enum.Parse(typeof(Configuration.ValuePickingHeuristicsEnum), RowPickingMethodComboBox.Text);
             }
             catch (Exception)
             {
-                valuePickingMethod = ValuePickingHeuristicsEnum.Increment;
+                valuePickingMethod = Configuration.ValuePickingHeuristicsEnum.Increment;
             }
             try
             {
-                variablePickingMethod = (VariablePickingHeuristicsEnum)
-                    Enum.Parse(typeof(VariablePickingHeuristicsEnum), QueenPickingMethodComboBox.Text);
+                variablePickingMethod = (Configuration.VariablePickingHeuristicsEnum)
+                    Enum.Parse(typeof(Configuration.VariablePickingHeuristicsEnum), QueenPickingMethodComboBox.Text);
             }
             catch (Exception)
             {
-                variablePickingMethod = VariablePickingHeuristicsEnum.Random;
+                variablePickingMethod = Configuration.VariablePickingHeuristicsEnum.Random;
+            }
+            try
+            {
+                boardSize = int.Parse(BoardSizeTextBox.Text);
+            }
+            catch (Exception)
+            {
+                boardSize = 9;
             }
 
             return new ConfigurationBatchFile(
@@ -113,7 +117,8 @@ namespace Queens
                 maxN,
                 valuePickingMethod,
                 variablePickingMethod,
-                usedExecutor);
+                usedExecutor,
+                boardSize);
         }
 
         private void OnPreviewTextInput(object sender, TextCompositionEventArgs e)

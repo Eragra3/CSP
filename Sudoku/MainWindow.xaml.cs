@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,9 +15,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Queens.Logic;
 using Sudoku.Logic;
 using Sudoku.Models;
+using static Sudoku.Configuration;
 
 namespace Sudoku
 {
@@ -25,6 +26,11 @@ namespace Sudoku
     /// </summary>
     public partial class MainWindow : Window
     {
+        [ThreadStatic]
+        private static Random _random;
+
+        private static Random Random => _random ?? (_random = new Random());
+
         private Tile[][] Board { get; set; }
 
         public MainWindow()
@@ -127,7 +133,7 @@ namespace Sudoku
 
                             tile.ContentTextBox.TextChanged += RevalidateSolution;
 
-                            Board[tileColumnIndex][tileRowIndex] = tile;
+                            Board[tileRowIndex][tileColumnIndex] = tile;
                         }
                     }
 
@@ -149,6 +155,8 @@ namespace Sudoku
             RenderRandomSudoku(boardSize, holesCount);
         }
 
+
+
         private void RenderRandomSudoku(int boardSize, int fieldsToRemoveCount)
         {
             int[][] randomSolution;
@@ -167,50 +175,15 @@ namespace Sudoku
 
             var unfinishedSudoku = SudokuHelperMethods.RemoveRandomFields(randomSolution, fieldsToRemoveCount);
 
-            for (var i = 0; i < Board.Length; i++)
-            {
-                var row = Board[i];
-                for (var j = 0; j < row.Length; j++)
-                {
-                    var v = unfinishedSudoku.Sudoku[i + (j * boardSize)];
-                    row[j].ContentTextBox.Text = v == -1 ? string.Empty : v.ToString();
-                }
-            }
+            DrawSudoku(unfinishedSudoku.Sudoku, boardSize);
         }
 
-        private int GetBoardSize()
-        {
-            int boardSize;
-            if (int.TryParse(SubBoardSizeTextBox.Text, out boardSize))
-            {
-                boardSize *= boardSize;
-            }
-            else
-            {
-                boardSize = Configuration.BOARD_SIZE;
-            }
-
-            Configuration.GuiBoardSize = boardSize;
-
-            return boardSize;
-        }
-
-        private int GetHolesCount()
-        {
-            int holesCount;
-
-            if (!int.TryParse(HolesCountTextBox.Text, out holesCount))
-            {
-                holesCount = Configuration.HOLES_COUNT;
-            }
-
-            return holesCount;
-        }
 
         private void RevalidateSolution(object sender, TextChangedEventArgs eventArgs)
         {
             RevalidateSolution();
         }
+
         private void RevalidateSolution()
         {
             var s2 = Board.SelectMany(element => element.Select(el => ParseInteger(el.ContentTextBox.Text))).ToArray();
@@ -245,7 +218,203 @@ namespace Sudoku
 
         private void BacktrackingButtonClick(object sender, RoutedEventArgs e)
         {
-            //BacktrackingExecutor.FindSolution()
+            var valuePH = GetValuePickingHeuristic();
+            var variablePH = GetVariablePickingHeuristic();
+            var boardSize = GetBoardSize();
+            var holesCount = GetHolesCount();
+
+            var sudoku = GetSudokuFromBoard();
+
+            var solution = BacktrackingExecutor.FindSolution(
+                sudoku,
+                valuePH,
+                variablePH,
+                SudokuHelperMethods.Conflicts,
+                SudokuHelperMethods.GetDomain(boardSize));
+
+            if (solution.Solution != null)
+            {
+                DrawSudoku(solution.Solution, boardSize);
+            }
+            ShowStatisticsWindow(solution);
+        }
+
+        private void DrawSudoku(int[] sudoku, int boardSize)
+        {
+            for (var i = 0; i < Board.Length; i++)
+            {
+                var row = Board[i];
+                for (var j = 0; j < row.Length; j++)
+                {
+                    var v = sudoku[(i * boardSize) + j];
+                    row[j].ContentTextBox.Text = v == -1 ? string.Empty : v.ToString();
+                }
+            }
+        }
+
+
+        private void ShowStatisticsWindow(CSPSolution solution)
+        {
+            var window = new StatisicsWindow
+            {
+                NumberOfBacktracksLabel =
+                {
+                    Content = Regex.Replace(
+                        solution?.BacktracksCount
+                        .ToString()
+                        .Reverse(),
+                        @"(.{3})", "$1 ")
+                        .TrimEnd()
+                        .Reverse()
+                }
+            };
+            window.NoSolutionLabel.Visibility = solution?.Solution == null ? Visibility.Visible : Visibility.Hidden;
+            window.Show();
+        }
+
+        private void ClearSudokuFields()
+        {
+            foreach (var row in Board)
+            {
+                foreach (var tile in row)
+                {
+                    tile.ContentTextBox.Text = string.Empty;
+                }
+            }
+        }
+
+        #region variable getters
+        private int GetBoardSize()
+        {
+            int boardSize;
+            if (int.TryParse(SubBoardSizeTextBox.Text, out boardSize))
+            {
+                boardSize *= boardSize;
+            }
+            else
+            {
+                boardSize = Configuration.BOARD_SIZE;
+            }
+
+            Configuration.GuiBoardSize = boardSize;
+
+            return boardSize;
+        }
+
+        private int GetHolesCount()
+        {
+            int holesCount;
+
+            if (!int.TryParse(HolesCountTextBox.Text, out holesCount))
+            {
+                holesCount = Configuration.HOLES_COUNT;
+            }
+
+            return holesCount;
+        }
+        private VariablePickingHeuristicsEnum GetVariablePickingHeuristic()
+        {
+            VariablePickingHeuristicsEnum vph;
+            try
+            {
+                vph = (VariablePickingHeuristicsEnum)
+                    Enum.Parse(typeof(VariablePickingHeuristicsEnum), VariablePickingMethodComboBox.Text);
+            }
+            catch (Exception)
+            {
+                vph = VariablePickingHeuristicsEnum.Random;
+            }
+            return vph;
+        }
+
+        private ValuePickingHeuristicsEnum GetValuePickingHeuristic()
+        {
+            ValuePickingHeuristicsEnum vph;
+            try
+            {
+                vph = (ValuePickingHeuristicsEnum)
+                    Enum.Parse(typeof(ValuePickingHeuristicsEnum), ValuePickingMethodComboBox.Text);
+            }
+            catch (Exception)
+            {
+                vph = ValuePickingHeuristicsEnum.Random;
+            }
+            return vph;
+        }
+
+        private int[] GetSudokuFromBoard()
+        {
+            return Board.SelectMany(element => element.Select(el => ParseInteger(el.ContentTextBox.Text))).ToArray();
+        }
+
+        #endregion
+
+        private void ForwardCheckingButtonClick(object sender, RoutedEventArgs e)
+        {
+            var valuePH = GetValuePickingHeuristic();
+            var variablePH = GetVariablePickingHeuristic();
+            var boardSize = GetBoardSize();
+            var holesCount = GetHolesCount();
+
+            var sudoku = GetSudokuFromBoard();
+
+            var solution = ForwardCheckingExecutor.FindSolution(
+                sudoku,
+                valuePH,
+                variablePH,
+                SudokuHelperMethods.Conflicts,
+                SudokuHelperMethods.GetDomain(boardSize));
+
+            if (solution.Solution != null)
+            {
+                DrawSudoku(solution.Solution, boardSize);
+            }
+            ShowStatisticsWindow(solution);
+        }
+
+        private void ClearButtonClick(object sender, RoutedEventArgs e)
+        {
+            ClearSudokuFields();
+        }
+
+        private void AdvancedButtonClick(object sender, RoutedEventArgs e)
+        {
+            var window = new AdvancedWindow();
+
+            window.Show();
+        }
+
+        private void RemoveFieldsClick(object sender, RoutedEventArgs e)
+        {
+            var boardSize = GetBoardSize();
+            var removedFieldsCount = GetHolesCount();
+
+            var removedFields = new HashSet<int>();
+
+            if (removedFieldsCount > boardSize * boardSize)
+            {
+                removedFieldsCount = Configuration.HOLES_COUNT;
+            }
+
+            while (removedFieldsCount > 0)
+            {
+                int index;
+                do
+                {
+                    index = Random.Next(0, boardSize * boardSize);
+                } while (removedFields.Contains(index));
+
+                removedFields.Add(index);
+
+                removedFieldsCount--;
+            }
+
+            var unfinishedSudoku = Board.SelectMany(row => row).ToArray();
+            foreach (var removedFieldIndex in removedFields)
+            {
+                unfinishedSudoku[removedFieldIndex].ContentTextBox.Text = string.Empty;
+            }
+
         }
     }
 }

@@ -1,24 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Queens.Models
+﻿namespace Sudoku.Models
 {
     public class CSPSolution
     {
         public readonly int[] Solution;
 
-        public readonly int NumberOfBacktracks;
+        public readonly int BacktracksCount;
 
-        public readonly int N;
+        public readonly int HolesCount;
 
-        public CSPSolution(int[] solution, int numberOfBacktracks, int n)
+        public readonly int BoardSize;
+
+        public CSPSolution(int[] solution, int backtracksCount, int holesCount, int boardSize)
         {
             Solution = solution;
-            NumberOfBacktracks = numberOfBacktracks;
-            N = n;
+            BacktracksCount = backtracksCount;
+            HolesCount = holesCount;
+            BoardSize = boardSize;
         }
     }
 }

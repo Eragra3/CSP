@@ -1,45 +1,44 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Queens.Models;
-using Sudoku.Logic;
-using static Sudoku.Configuration;
+using Sudoku.Models;
 
-namespace Queens.Logic
+namespace Sudoku.Logic
 {
     public static class BacktrackingExecutor
     {
         public static CSPSolution FindSolution(
-            int variablesCount,
-            ValuePickingHeuristicsEnum valuePickingHeuristic,
-            VariablePickingHeuristicsEnum variablePickingHeuristic,
-            Func<int[], int, int, int[], bool> conflictsFunc,
+            int[] variablesValues,
+            Configuration.ValuePickingHeuristicsEnum valuePickingHeuristic,
+            Configuration.VariablePickingHeuristicsEnum variablePickingHeuristic,
+            Func<int[], int[], bool> conflictsFunc,
             int[] domain)
         {
             var backtracksCount = 0;
 
-            var variablesValues = new int[variablesCount];
+            var variablesCount = variablesValues.Length;
+
+            var emptyVariablesIndeces = new HashSet<int>();
             for (var i = 0; i < variablesValues.Length; i++)
             {
-                variablesValues[i] = -1;
+                if (variablesValues[i] == -1)
+                {
+                    emptyVariablesIndeces.Add(i);
+                }
             }
+            var variablesWithoutValues = emptyVariablesIndeces.ToArray();
 
             int[] variableEvaluationOrder;
             switch (variablePickingHeuristic)
             {
-                case VariablePickingHeuristicsEnum.Increment:
-                    variableEvaluationOrder = SudokuHelperMethods.GetIncrementalVariableOrder(variablesCount);
+                case Configuration.VariablePickingHeuristicsEnum.Increment:
+                    variableEvaluationOrder = SudokuHelperMethods.GetIncrementalVariableOrder(variablesWithoutValues);
                     break;
-                case VariablePickingHeuristicsEnum.Random:
-                    variableEvaluationOrder = SudokuHelperMethods.GetRandomVariableOrder(variablesCount);
+                case Configuration.VariablePickingHeuristicsEnum.Random:
+                    variableEvaluationOrder = SudokuHelperMethods.GetRandomVariableOrder(variablesWithoutValues);
                     break;
                 default:
-                    throw new Exception($"{variablePickingHeuristic} is not value of {nameof(VariablePickingHeuristicsEnum)}");
+                    throw new Exception($"{variablePickingHeuristic} is not value of {nameof(Configuration.VariablePickingHeuristicsEnum)}");
             }
 
 
@@ -62,20 +61,20 @@ namespace Queens.Logic
 
                 var domainWithoutObviousConflicts = domain
                                 .Except(backtrackedValuesLists[currentVariableIndex])
-                                .Except(variablesValues).ToList();
+                                .ToList();
 
                 while (variablesValues[currentVariableIndex] == -1)
                 {
                     switch (valuePickingHeuristic)
                     {
-                        case ValuePickingHeuristicsEnum.Increment:
+                        case Configuration.ValuePickingHeuristicsEnum.Increment:
                             currentVariableValue = SudokuHelperMethods.GetMinimumValue(
                                 domainWithoutObviousConflicts
                                 .Except(conflictingValues)
                                 .ToList());
                             noValidValueInDomain = currentVariableValue == -1;
                             break;
-                        case ValuePickingHeuristicsEnum.Random:
+                        case Configuration.ValuePickingHeuristicsEnum.Random:
                             var possibleRows = domainWithoutObviousConflicts.Except(conflictingValues).ToList();
                             if (possibleRows.Count == 0)
                                 noValidValueInDomain = true;
@@ -92,30 +91,28 @@ namespace Queens.Logic
                         break;
                     }
 
-                    var conflicts = conflictsFunc(variablesValues, currentVariableValue, currentVariableIndex, domain);
+                    variablesValues[currentVariableIndex] = currentVariableValue;
+                    var conflicts = conflictsFunc(variablesValues, domain);
 
 
                     if (conflicts)
                     {
+                        variablesValues[currentVariableIndex] = -1;
                         conflictingValues.Add(currentVariableValue);
-                    }
-                    else
-                    {
-                        variablesValues[currentVariableIndex] = currentVariableValue;
                     }
                 }
 
                 //go back
                 if (variablesValues[currentVariableIndex] == -1)
                 {
+                    if (index - 1 < 0)
+                    {
+                        return new CSPSolution(variablesValues, backtracksCount, variablesWithoutValues.Length, (int)Math.Sqrt(variablesCount));
+                    }
                     backtracksCount++;
                     backtrackedValuesLists[currentVariableIndex].Clear();
 
                     index--;
-                    if (index < 0)
-                    {
-                        return new CSPSolution(variablesValues, backtracksCount, variablesCount);
-                    }
 
                     //previous variable cannot use this value
                     var prevIndex = variableEvaluationOrder[index];
@@ -127,7 +124,7 @@ namespace Queens.Logic
                 }
             }
 
-            var solution = new CSPSolution(variablesValues, backtracksCount, variablesCount);
+            var solution = new CSPSolution(variablesValues, backtracksCount, variablesWithoutValues.Length, (int)Math.Sqrt(variablesCount));
 
             return solution;
         }
